@@ -86,7 +86,7 @@ def build_submission(script_dir: Path, model_name: str, remote_be: bool):
     Build the submission, including pulling dependencies as neeed
     """
     if remote_be:
-        subprocess.run(["pip", "install", "-r", "./submission_remote/requirements.txt"], check=True)
+        subprocess.run(["pip", "install", "-r", f"./submission_remote/{model_name}/requirements.txt"], check=True)
     else:
         # Clone and build OpenFHE if needed
         subprocess.run([script_dir/"get_openfhe.sh"], check=True)

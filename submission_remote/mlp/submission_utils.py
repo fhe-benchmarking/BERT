@@ -21,7 +21,7 @@ class LocalFilePaths:
 
         self.BATCH_SIZE = batch_size[size]
 
-        PARENT_DIR = Path(os.path.dirname(os.path.abspath(__file__))).parent
+        PARENT_DIR = Path(os.path.dirname(os.path.abspath(__file__))).parent.parent
         self.TEST_DATA_PATH = PARENT_DIR / "datasets" / instance_name[size] / "intermediate" / "test_pixels.txt"
         self.IO_DIR =  PARENT_DIR / "io"       / instance_name[size]
 
