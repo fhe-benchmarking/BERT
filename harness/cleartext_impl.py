@@ -22,20 +22,37 @@ import sys
 from pathlib import Path
 from utils import parse_submission_arguments
 from mnist import mnist
+from cifar10 import cifar10
 
 def main():
     """
     Usage:  python3 cleartext_impl.py  <input_pixels_path>  <output_labels_path>
     """
 
-    if len(sys.argv) != 3:
-        sys.exit("Usage: cleartext_impl.py <input_pixels_path> <output_labels_path>")
+    if len(sys.argv) != 4:
+        sys.exit("Usage: cleartext_impl.py <input_pixels_path> <output_labels_path> <dataset_name>")
+
+    # Paths to trained models
+    minst_path = "harness/mnist/mnist_ffnn_model.pth"
+    cifar10_path = "harness/cifar10/cifar10_resnet20_model.pth"
 
     INPUT_PATH = Path(sys.argv[1])
     OUTPUT_PATH = Path(sys.argv[2])
-    model_path = "harness/mnist/mnist_ffnn_model.pth"
+    DATASET_NAME = sys.argv[3]
 
-    mnist.run_predict(model_path=model_path, pixels_file=INPUT_PATH, predictions_file=OUTPUT_PATH)
+    match DATASET_NAME:
+        case "mnist": 
+            return mnist.run_predict(
+                model_path=minst_path, 
+                pixels_file=INPUT_PATH, 
+                predictions_file=OUTPUT_PATH)
+        case "cifar10": 
+            return cifar10.run_predict(
+                model_path=cifar10_path, 
+                pixels_file=INPUT_PATH, 
+                predictions_file=OUTPUT_PATH)
+        case _:
+            raise ValueError(f"Unsupported dataset name: {DATASET_NAME}")
 
 if __name__ == "__main__":
     main()

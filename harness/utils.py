@@ -220,7 +220,7 @@ def run_exe_or_python(base, file_name, *args, check=True):
     exe = base / "build" / file_name
 
     if py.exists():
-        cmd = ["python3", py, *args]
+        cmd = [sys.executable, py, *args]
     elif exe.exists():
         cmd = [exe, *args]
     else:

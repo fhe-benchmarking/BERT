@@ -19,6 +19,7 @@ from a storage source.
 import sys
 from pathlib import Path
 from mnist import mnist
+from cifar10 import cifar10
 
 def main():
     """
@@ -32,11 +33,19 @@ def main():
     DATASET_NAME = sys.argv[2]
     DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-    if DATASET_NAME == "mnist":
-        mnist.export_test_data(output_file=DATASET_PATH, num_samples=10000, seed=None)
-    else:
-        raise ValueError(f"Unsupported dataset name: {DATASET_NAME}")
-
+    match DATASET_NAME:
+        case "mnist": 
+            return mnist.export_test_data(
+                output_file=DATASET_PATH, 
+                num_samples=10000, 
+                seed=None)
+        case "cifar10": 
+            return cifar10.export_test_data(
+                output_file=DATASET_PATH, 
+                num_samples=10000, 
+                seed=None)
+        case _: 
+            raise ValueError(f"Unsupported dataset name: {DATASET_NAME}")
 
 if __name__ == "__main__":
     main()
