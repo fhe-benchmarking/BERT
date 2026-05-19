@@ -4,6 +4,7 @@ io/
 third_party/
 harness/__pycache__/
 harness/mnist/__pycache__/
+harness/cifar10/__pycache__/
 
 # Prerequisites
 *.d
