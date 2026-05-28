@@ -161,13 +161,13 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
     global _model_quality
 
     _timestampsStr["Total"] = f"{round(sum(_timestamps.values()), 4)}s"
-    _timestampsRemote = {}
+    _timestampsReported = {}
     if submission_report_path.exists():
         with open(submission_report_path, "r") as f:
             server_reported_times = json.load(f)
             print(f"{TextFormat.GREEN}         [submission] Server reported steps: {server_reported_times}{TextFormat.RESET}")
             for step_name, time_str in server_reported_times.items():
-                _timestampsRemote[step_name] = f"{time_str}s"
+                _timestampsReported[step_name] = f"{time_str}s"
                 print(f"{TextFormat.PURPLE}         [submission] {step_name}: {time_str}s{TextFormat.RESET}")
     else:
         print(f"{TextFormat.PURPLE}         [harness] Note: Submitters can specify Server reported steps file at {submission_report_path}{TextFormat.RESET}")
@@ -178,7 +178,7 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
             "dataset_name": dataset_name,
             "Timing": _timestampsStr,
             "Bandwidth": _bandwidth,
-            "Server Reported": _timestampsRemote,
+            "Server Reported": _timestampsReported,
         }, open(path, "w"), indent=2)
     else:
         json.dump({
@@ -187,7 +187,7 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
             "Timing": _timestampsStr,
             "Bandwidth": _bandwidth,
             "Quality": _model_quality,
-            "Server Reported": _timestampsRemote,
+            "Server Reported": _timestampsReported,
         }, open(path, "w"), indent=2)
 
     print("[total latency]", f"{round(sum(_timestamps.values()), 4)}s")
