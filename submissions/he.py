@@ -5,7 +5,6 @@ import numpy as np
 
 from timer import Timer
 from params import InstanceParams
-from .timer import Timer
 from desilofhe import (
     BootstrapKey,
     Ciphertext,
