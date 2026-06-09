@@ -34,7 +34,7 @@ _bandwidth = {}
 # Global variable to store model quality metrics
 _model_quality = {}
 
-def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, bool, str, str]:
+def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, str, str]:
     """
     Get the arguments of the submission. Populate arguments as needed for the workload.
     """
@@ -48,20 +48,16 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Random seed for dataset and query generation')
     parser.add_argument('--clrtxt', type=int,
                         help='Specify with 1 if to rerun the cleartext computation')
-    parser.add_argument('--remote', action='store_true',
-                        help='Run example submission in remote backend mode')
-    parser.add_argument('--model', default='mlp', type=str,
-                        help='Pick a model run (default: mlp)')
-    parser.add_argument('--dataset', default='mnist', type=str,
-                        help='Pick a dataset run (default: mnist)')
-    
+    parser.add_argument('--model', default='thor', type=str,
+                        help='Pick a model run (default: thor)')
+    parser.add_argument('--dataset', default='mrpc', type=str,
+                        help='Pick a dataset run (default: mrpc)')
 
     args = parser.parse_args()
     size = args.size
     seed = args.seed
     num_runs = args.num_runs
     clrtxt = args.clrtxt
-    remote_be = args.remote
 
     # adding model and dataset to the arguments
     model_name = args.model.lower()
@@ -69,29 +65,34 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
 
     # Use params.py to get instance parameters
     params = InstanceParams(size, dataset=dataset_name)
-    return size, params, seed, num_runs, clrtxt, remote_be, model_name, dataset_name
+    return size, params, seed, num_runs, clrtxt, model_name, dataset_name
 
 def ensure_directories(rootdir: Path):
     """ Check that the current directory has sub-directories
-    'harness', 'scripts', and 'submissions' """
-    required_dirs = ['harness', 'scripts', 'submissions']
+    'harness' and 'submissions' """
+    required_dirs = ['harness', 'submissions']
     for dir_name in required_dirs:
         if not (rootdir / dir_name).exists():
             print(f"Error: Required directory '{dir_name}'",
                   f"not found in {rootdir}")
             sys.exit(1)
 
-def build_submission(script_dir: Path, model_name: str, remote_be: bool):
+def check_requirements(model_name: str):
     """
-    Build the submission, including pulling dependencies as neeed
+    Check that required Python packages for the submission are importable.
     """
-    if remote_be:
-        subprocess.run(["pip", "install", "-r", f"./submission_remote/{model_name}/requirements.txt"], check=True)
-    else:
-        # Clone and build OpenFHE if needed
-        subprocess.run([script_dir/"get_openfhe.sh"], check=True)
-        # CMake build of the submission itself
-        subprocess.run([script_dir/"build_task.sh", f"./submissions/{model_name}"], check=True)
+    required_packages = ['numpy', 'torch', 'transformers', 'datasets', 'desilofhe']
+    missing = []
+    for pkg in required_packages:
+        result = subprocess.run(
+            [sys.executable, "-c", f"import {pkg}"],
+            capture_output=True)
+        if result.returncode != 0:
+            missing.append(pkg)
+    if missing:
+        print(f"Error: Missing required packages: {', '.join(missing)}")
+        print("Install them with: pip install " + " ".join(missing))
+        sys.exit(1)
 
 class TextFormat:
     BOLD = "\033[1m"

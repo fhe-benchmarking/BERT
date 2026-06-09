@@ -12,7 +12,7 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    params = InstanceParams(int(sys.argv[1]))
+    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
     io_dir = params.iodir()
     download_dir = io_dir / "ciphertexts_download"
     intermediate_dir = params.io_intermediate_dir()

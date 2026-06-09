@@ -9,7 +9,7 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    params = InstanceParams(int(sys.argv[1]))
+    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
     intermediate_dir = params.io_intermediate_dir()
 
     decrypted_path = intermediate_dir / "decrypted_results.jsonl"

@@ -28,32 +28,29 @@ def main():
     
     # 0. Prepare running
     # Get the arguments
-    size, params, seed, num_runs, clrtxt, remote_be, model_name, dataset_name = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
+    size, params, seed, num_runs, clrtxt, model_name, dataset_name = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
     test = instance_name(size)
     print(f"\n[harness] Running submission for {test} inference")
 
     # Ensure the required directories exist
     utils.ensure_directories(params.rootdir)
 
-    # The harness scripts are in the 'harness' directory,
-    # the submission code is either in submissions or submission_remote
     harness_dir = params.rootdir/"harness"
-    exec_dir = params.rootdir/ ("submission_remote" if remote_be else "submissions")
-    
-    # check whether the exec_dir contains a subdirectory equals to the model name. 
+    exec_dir = params.rootdir/"submissions"
+
+    # check whether the exec_dir contains a subdirectory equals to the model name.
     model_exec_dir = exec_dir / model_name
     if not model_exec_dir.is_dir():
         print(f"[harness]: Model directory {model_exec_dir} not found.")
         sys.exit(1)
-    
-    # check whether the dataset exist 
+
+    # check whether the dataset exist
     dataset_exec_dir = harness_dir/dataset_name
     if not dataset_exec_dir.is_dir():
         print(f"[harness]: Dataset directory {dataset_exec_dir} not found.")
         sys.exit(1)
 
-    # Build the submission if not built already
-    utils.build_submission(params.rootdir/"scripts", model_name, remote_be)
+    utils.check_requirements(model_name)
 
     # Remove and re-create IO directory
     io_dir = params.iodir()
@@ -71,26 +68,14 @@ def main():
     utils.run_exe_or_python(harness_dir, "generate_dataset", *dataset_args)
     utils.log_step(1, "Test dataset generation")
 
-    # 2.1 Communication: Get cryptographic context
-    if remote_be:
-        utils.run_exe_or_python(model_exec_dir, "server_get_params", str(size))
-        utils.log_step(2.1 , "Communication: Get cryptographic context")
-        # Report size of context
-        utils.log_size(io_dir / "client_data", "Cryptographic Context")
-
-    # 2.2 Client-side: Generate the cryptographic keys
+    # 2. Client-side: Generate the cryptographic keys
     # Note: this does not use the rng seed above, it lets the implementation
     #   handle its own prg needs. It means that even if called with the same
     #   seed multiple times, the keys and ciphertexts will still be different.
     utils.run_exe_or_python(model_exec_dir, "client_key_generation", str(size))
-    utils.log_step(2.2 , "Key Generation")
+    utils.log_step(2, "Key Generation")
     # Report size of keys and encrypted data
     utils.log_size(io_dir / "public_keys", "Public and evaluation keys")
-
-    # 2.3 Communication: Upload evaluation key
-    if remote_be:
-        utils.run_exe_or_python(model_exec_dir, "server_upload_ek", str(size))
-        utils.log_step(2.3 , "Communication: Upload evaluation key")
 
     # 3. Server-side: Preprocess the (encrypted) dataset using exec_dir/server_preprocess_model
     utils.run_exe_or_python(model_exec_dir, "server_preprocess_model", str(size))

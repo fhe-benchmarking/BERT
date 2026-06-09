@@ -18,8 +18,6 @@ from a storage source.
 
 import sys
 from pathlib import Path
-from mnist import mnist
-from cifar10 import cifar10
 from mrpc import mrpc
 
 def main():
@@ -35,16 +33,6 @@ def main():
     DATASET_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     match DATASET_NAME:
-        case "mnist": 
-            return mnist.export_test_data(
-                output_file=DATASET_PATH, 
-                num_samples=10000, 
-                seed=None)
-        case "cifar10":
-            return cifar10.export_test_data(
-                output_file=DATASET_PATH,
-                num_samples=10000,
-                seed=None)
         case "mrpc":
             return mrpc.export_test_data(
                 output_file=DATASET_PATH,
