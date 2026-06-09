@@ -113,6 +113,11 @@ def main():
         key_count += 1
 
     print(f"Generated {key_count} fixed rotation keys.")
+
+    print("Generating public key...")
+    public_key = engine.create_public_key(secret_key)
+    engine.write_public_key(public_key, public_keys_dir / "public_key")
+
     print(f"Keys written to {public_keys_dir}")
 
 
