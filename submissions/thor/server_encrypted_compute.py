@@ -12,7 +12,7 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    params = InstanceParams(int(sys.argv[1]))
+    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
     io_dir = params.iodir()
 
     with open(io_dir / "thor_config.json") as f:

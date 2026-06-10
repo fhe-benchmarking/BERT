@@ -67,7 +67,7 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    params = InstanceParams(int(sys.argv[1]))
+    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
     io_dir = params.iodir()
     public_keys_dir = io_dir / "public_keys"
     fixed_rotation_keys_dir = public_keys_dir / "fixed_rotation_keys"
