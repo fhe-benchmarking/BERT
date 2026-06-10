@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
+from params import InstanceParams
 from timer import Timer
 from desilofhe import (
     BootstrapKey,
@@ -26,16 +27,16 @@ class DeltaCiphertext:
 
 
 class HE:
-    def __init__(self, io_dir: Path, compact: bool, bootstrap_key_size: str):
+    def __init__(self, params: InstanceParams, compact: bool, bootstrap_key_size: str):
         self.compact = compact
         self.bootstrap_key_size = bootstrap_key_size
         self.timer = Timer()
 
         mode = "compact" if compact else "default"
-        self.light_plaintext_path = io_dir / "server_data" / "light_plaintexts" / mode
+        self.light_plaintext_path = params.server_data_dir() / "light_plaintexts" / mode
         self.mask_path = self.light_plaintext_path / "masks"
 
-        public_keys_dir = io_dir / "public_keys"
+        public_keys_dir = params.iodir() / "public_keys"
         fixed_rotation_keys_dir = public_keys_dir / "fixed_rotation_keys"
 
         self.engine = Engine(

@@ -72,6 +72,10 @@ class InstanceParams:
         """Return the I/O directory path."""
         return self.rootdir / "io" / instance_name(self.size)
 
+    def server_data_dir(self):
+        """Return the persistent server data directory (size-independent, not wiped between runs)."""
+        return self.rootdir / "io" / "server_data"
+
     def io_intermediate_dir(self):
         """Return the intermediate  directory path."""
         return self.iodir() / "intermediate"

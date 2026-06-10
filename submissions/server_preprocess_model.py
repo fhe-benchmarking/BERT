@@ -1,11 +1,11 @@
 import json
 import mmap
 import sys
-from pathlib import Path
 
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
 
+from params import InstanceParams
 from encode_weights import (
     pre_encode_masks,
     pre_encode_stage_03,
@@ -21,7 +21,6 @@ from encode_weights import (
 )
 
 MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
-INSTANCE_NAMES = ["single", "small", "medium", "large"]
 PER_LAYER_STAGES = [
     "stage_03", "stage_04", "stage_05",
     "stage_10", "stage_11", "stage_12",
@@ -42,8 +41,8 @@ def warm_cache(path: Path):
                 m.read(length)
 
 
-def light_plaintext_path(io_dir, compact):
-    return io_dir / "server_data" / "light_plaintexts" / ("compact" if compact else "default")
+def light_plaintext_path(server_data_dir, compact):
+    return server_data_dir / "light_plaintexts" / ("compact" if compact else "default")
 
 
 def is_complete(lp_path):
@@ -62,14 +61,14 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    size = int(sys.argv[1])
-    io_dir = Path("io") / INSTANCE_NAMES[size]
+    params = InstanceParams(int(sys.argv[1]))
+    io_dir = params.iodir()
 
     with open(io_dir / "thor_config.json") as f:
         config = json.load(f)
     compact = config["compact"]
 
-    lp_path = light_plaintext_path(io_dir, compact)
+    lp_path = light_plaintext_path(params.server_data_dir(), compact)
 
     if is_complete(lp_path):
         print(f"Light plaintexts already exist at {lp_path} — skipping generation.")

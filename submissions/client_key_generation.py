@@ -1,10 +1,9 @@
 import json
 import sys
-from pathlib import Path
 
 from desilofhe import Engine
 
-_INSTANCE_NAMES = ["single", "small", "medium", "large"]
+from params import InstanceParams
 
 # Set COMPACT = True to use compact mode, which reduces overall memory footprint.
 COMPACT = False
@@ -64,8 +63,12 @@ _ROTATION_CONTEXTS = [
 
 
 def main():
-    size = int(sys.argv[1])
-    io_dir = Path("io") / _INSTANCE_NAMES[size]
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
+        sys.exit(1)
+
+    params = InstanceParams(int(sys.argv[1]))
+    io_dir = params.iodir()
     public_keys_dir = io_dir / "public_keys"
     fixed_rotation_keys_dir = public_keys_dir / "fixed_rotation_keys"
 
