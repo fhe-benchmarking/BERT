@@ -2,6 +2,8 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+
+from timer import Timer
 from desilofhe import (
     BootstrapKey,
     Ciphertext,
@@ -26,6 +28,7 @@ class HE:
     def __init__(self, io_dir: Path, compact: bool, bootstrap_key_size: str):
         self.compact = compact
         self.bootstrap_key_size = bootstrap_key_size
+        self.timer = Timer()
 
         mode = "compact" if compact else "default"
         self.light_plaintext_path = io_dir / "server_data" / "light_plaintexts" / mode
@@ -357,12 +360,13 @@ class HE:
         weight = np.full((4, 6, 64), None, dtype=object)
         bias = np.full((4,), None, dtype=object)
         path = self.light_plaintext_path / stage_name / f"layer_{layer_index}"
-        for index in np.ndindex(weight.shape):
-            postfix = "_".join(map(str, index))
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
-        for index in np.ndindex(bias.shape):
-            postfix = "_".join(map(str, index))
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{postfix}"))
+        with self.timer.paused():
+            for index in np.ndindex(weight.shape):
+                postfix = "_".join(map(str, index))
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
+            for index in np.ndindex(bias.shape):
+                postfix = "_".join(map(str, index))
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{postfix}"))
         wx = self.pcmm(weight, x)
         output = np.full((4,), None, dtype=object)
         for i in range(4):
@@ -808,11 +812,12 @@ class HE:
         weight = np.full((8, 6, 32), None, dtype=object)
         bias = np.full((8,), None, dtype=object)
         path = self.light_plaintext_path / "stage_10" / f"layer_{layer_index}"
-        for index in np.ndindex(weight.shape):
-            postfix = "_".join(map(str, index))
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
-        for index in range(8):
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
+        with self.timer.paused():
+            for index in np.ndindex(weight.shape):
+                postfix = "_".join(map(str, index))
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
+            for index in range(8):
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
         wx = self.pcmm(weight, x)
         mask = self.masks["attention_dense"]
         output = np.full((8,), None, dtype=object)
@@ -918,9 +923,10 @@ class HE:
         weight = np.full((8,), None, dtype=object)
         bias = np.full((8,), None, dtype=object)
         path = self.light_plaintext_path / "stage_11" / f"layer_{layer_index}"
-        for index in range(8):
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
+        with self.timer.paused():
+            for index in range(8):
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
         return self.he_layernorm1(layernorm_input, weight, bias)
 
     def stage_12_intermediate_dense(self, x, layer_index):
@@ -936,12 +942,13 @@ class HE:
         weight = np.full((2, 8, 6, 64), None, dtype=object)
         bias = np.full((2, 8), None, dtype=object)
         path = self.light_plaintext_path / "stage_12" / f"layer_{layer_index}"
-        for index in np.ndindex(weight.shape):
-            postfix = "_".join(map(str, index))
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
-        for index in np.ndindex(bias.shape):
-            postfix = "_".join(map(str, index))
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{postfix}"))
+        with self.timer.paused():
+            for index in np.ndindex(weight.shape):
+                postfix = "_".join(map(str, index))
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
+            for index in np.ndindex(bias.shape):
+                postfix = "_".join(map(str, index))
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{postfix}"))
         output = np.full((2, 8), None, dtype=object)
         output[0] = self.pcmm(weight[0], dense_input, mode="block_diag_2")
         output[1] = self.pcmm(weight[1], dense_input, mode="block_diag_2")
@@ -984,11 +991,12 @@ class HE:
         weight = np.full((2, 8, 6, 64), None, dtype=object)
         bias = np.full((8,), None, dtype=object)
         path = self.light_plaintext_path / "stage_14" / f"layer_{layer_index}"
-        for index in np.ndindex(weight.shape):
-            postfix = "_".join(map(str, index))
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
-        for index in range(8):
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
+        with self.timer.paused():
+            for index in np.ndindex(weight.shape):
+                postfix = "_".join(map(str, index))
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
+            for index in range(8):
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
         wx = np.full((2, 8), None, dtype=object)
         for row in range(2):
             rotated = np.full((64,), None, dtype=object)
@@ -1025,9 +1033,10 @@ class HE:
         weight = np.full((8,), None, dtype=object)
         bias = np.full((8,), None, dtype=object)
         path = self.light_plaintext_path / "stage_16" / f"layer_{layer_index}"
-        for index in range(8):
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
+        with self.timer.paused():
+            for index in range(8):
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
         if layer_index == 9 or layer_index == 10:
             return self.he_layernorm3(x, weight, bias)
         return self.he_layernorm2(x, weight, bias)
@@ -1035,10 +1044,11 @@ class HE:
     def pooler_dense(self, x):
         weight = np.full((6, 4), None, dtype=object)
         path = self.light_plaintext_path / "stage_17"
-        for index in np.ndindex(weight.shape):
-            postfix = "_".join(map(str, index))
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
-        bias = self.engine.read_light_plaintext(str(path / "b_0"))
+        with self.timer.paused():
+            for index in np.ndindex(weight.shape):
+                postfix = "_".join(map(str, index))
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{postfix}"))
+            bias = self.engine.read_light_plaintext(str(path / "b_0"))
         mask = self.masks["pooler_dense"]
         for index in range(4):
             masked = self.multiply(mask, x[index])
@@ -1092,9 +1102,10 @@ class HE:
         weight = np.full((2,), None, dtype=object)
         bias = np.full((2,), None, dtype=object)
         path = self.light_plaintext_path / "stage_18"
-        for index in range(2):
-            weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
-            bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
+        with self.timer.paused():
+            for index in range(2):
+                weight[index] = self.engine.read_light_plaintext(str(path / f"w_{index}"))
+                bias[index] = self.engine.read_light_plaintext(str(path / f"b_{index}"))
         class_count = weight.shape[0]
         output = np.full((class_count,), None, dtype=object)
         prepared = self.prepare_for_multiply(x[0])
