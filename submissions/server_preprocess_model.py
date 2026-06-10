@@ -1,7 +1,6 @@
 import json
 import mmap
 import sys
-from pathlib import Path
 
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
