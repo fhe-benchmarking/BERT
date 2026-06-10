@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
+from params import InstanceParams
 from timer import Timer
 from params import InstanceParams
 from desilofhe import (
