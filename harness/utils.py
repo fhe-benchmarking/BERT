@@ -193,11 +193,17 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
 
     print("[total latency]", f"{round(sum(_timestamps.values()), 4)}s")
 
-def calculate_quality(label_file: Path, pred_file: Path, tag: str):
+QUALITY_THRESHOLDS = {
+    "mrpc": 0.75,
+}
+
+def calculate_quality(label_file: Path, pred_file: Path, tag: str, threshold: float = None) -> dict:
     """
     Calculates accuracy by comparing labels line by line.
     Label file and predictions file should contain one label per line.
-    Logs accuracy metric and prints results.
+    Logs accuracy metric and prints results. If threshold is given, also
+    prints a PASS/FAIL line against that threshold.
+    Returns a dict with correct_predictions, total_samples, and accuracy.
     """
 
     try:
@@ -219,6 +225,14 @@ def calculate_quality(label_file: Path, pred_file: Path, tag: str):
     accuracy = correct_pred / num_samples
     print(f"[harness] {tag}: {accuracy:.4f} ({correct_pred}/{num_samples} correct)")
     log_quality(correct_pred, num_samples, f"{tag} quality")
+
+    if threshold is not None:
+        passed = accuracy >= threshold
+        status = "PASS" if passed else "FAIL"
+        color = TextFormat.GREEN if passed else TextFormat.RED
+        print(f"{color}[harness] {tag} threshold ({threshold:.0%}): {status}{TextFormat.RESET}")
+
+    return {"correct_predictions": correct_pred, "total_samples": num_samples, "accuracy": accuracy}
 
 
 def log_quality(correct_predictions, total_samples, tag):
