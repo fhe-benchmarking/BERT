@@ -1,4 +1,5 @@
 import json
+import mmap
 import sys
 from pathlib import Path
 
@@ -26,6 +27,19 @@ PER_LAYER_STAGES = [
     "stage_10", "stage_11", "stage_12",
     "stage_14", "stage_16",
 ]
+
+
+def warm_cache(path: Path):
+    for f in path.rglob("*"):
+        if not f.is_file():
+            continue
+        with open(f, "rb") as fh:
+            length = f.stat().st_size
+            if length == 0:
+                continue
+            with mmap.mmap(fh.fileno(), length, access=mmap.ACCESS_READ) as m:
+                m.madvise(mmap.MADV_SEQUENTIAL)
+                m.read(length)
 
 
 def light_plaintext_path(io_dir, compact):
@@ -59,6 +73,8 @@ def main():
 
     if is_complete(lp_path):
         print(f"Light plaintexts already exist at {lp_path} — skipping generation.")
+        print("Warming page cache...")
+        warm_cache(lp_path)
         return
 
     print(f"Loading model {MODEL_ID}...")
@@ -89,6 +105,8 @@ def main():
     pre_encode_stage_17(engine, weights, lp_path)
     pre_encode_stage_18(engine, weights, lp_path)
 
+    print("Warming page cache...")
+    warm_cache(lp_path)
     print(f"Light plaintexts written to {lp_path}")
 
 
