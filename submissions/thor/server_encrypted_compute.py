@@ -1,12 +1,10 @@
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 
 from he import HE
-
-INSTANCE_NAMES = ["single", "small", "medium", "large"]
+from params import InstanceParams
 
 
 def main():
@@ -14,8 +12,8 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    size = int(sys.argv[1])
-    io_dir = Path("io") / INSTANCE_NAMES[size]
+    params = InstanceParams(int(sys.argv[1]))
+    io_dir = params.iodir()
 
     with open(io_dir / "thor_config.json") as f:
         config = json.load(f)
@@ -23,7 +21,7 @@ def main():
     bootstrap_key_size = config["bootstrap_key_size"]
 
     print("Loading keys and light plaintexts...")
-    he = HE(io_dir, compact, bootstrap_key_size)
+    he = HE(params, compact, bootstrap_key_size)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
