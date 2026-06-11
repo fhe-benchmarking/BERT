@@ -22,7 +22,7 @@ def main():
     bootstrap_key_size = config["bootstrap_key_size"]
 
     print("Loading keys and weights...")
-    he = HE(io_dir, compact, bootstrap_key_size)
+    he = HE(params, compact, bootstrap_key_size)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
