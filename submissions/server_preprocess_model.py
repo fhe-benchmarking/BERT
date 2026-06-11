@@ -6,7 +6,7 @@ from pathlib import Path
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
 
-from encode_weights import (
+from thor.encode_weights import (
     pre_encode_masks,
     pre_encode_stage_03,
     pre_encode_stage_04,
@@ -77,7 +77,6 @@ def main():
         warm_cache(lp_path)
         return
 
-    print(f"Loading model {MODEL_ID}...")
     model = BertForNextSentencePrediction.from_pretrained(MODEL_ID)
     model.eval()
 
@@ -105,9 +104,9 @@ def main():
     pre_encode_stage_17(engine, weights, lp_path)
     pre_encode_stage_18(engine, weights, lp_path)
 
+    # This reduces the latency during the inference.
     print("Warming page cache...")
     warm_cache(lp_path)
-    print(f"Light plaintexts written to {lp_path}")
 
 
 if __name__ == "__main__":

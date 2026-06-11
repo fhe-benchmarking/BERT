@@ -192,7 +192,6 @@ def encode_b_cls(b):
 
 
 def write_light_plaintext_to_file(engine, messages, level, path):
-    print("file path:", path, "shape:", messages.shape, "level:", level)
     for index, message in np.ndenumerate(messages):
         postfix = "_".join(map(str, index))
         light_plaintext = engine.encode_to_light_plaintext(message, level)
