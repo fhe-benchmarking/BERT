@@ -4,7 +4,7 @@ from pathlib import Path
 
 import numpy as np
 
-from he import HE
+from thor.he import HE
 
 INSTANCE_NAMES = ["single", "small", "medium", "large"]
 
@@ -22,7 +22,7 @@ def main():
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
 
-    print("Loading keys and light plaintexts...")
+    print("Loading keys and weights...")
     he = HE(io_dir, compact, bootstrap_key_size)
 
     upload_dir = io_dir / "ciphertexts_upload"
@@ -90,7 +90,6 @@ def main():
     with open(io_dir / "server_reported_steps.json", "w") as f:
         json.dump(steps, f, indent=2)
 
-    print(f"Results written to {download_dir}")
     print(f"Compute: {total_compute_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
 
 
