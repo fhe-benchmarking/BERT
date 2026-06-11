@@ -4,7 +4,6 @@ from pathlib import Path
 import numpy as np
 
 from params import InstanceParams
-from .timer import Timer
 from desilofhe import (
     BootstrapKey,
     Ciphertext,
@@ -15,6 +14,7 @@ from desilofhe import (
     PublicKey,
     RelinearizationKey,
 )
+from .timer import Timer
 
 SLOT_COUNT = 2**15
 GROUP_SIZE = 2**11
