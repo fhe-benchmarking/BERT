@@ -104,6 +104,7 @@ def main():
     pre_encode_stage_17(engine, weights, lp_path)
     pre_encode_stage_18(engine, weights, lp_path)
 
+    # This reduces the latency during the inference.
     print("Warming page cache...")
     warm_cache(lp_path)
 
