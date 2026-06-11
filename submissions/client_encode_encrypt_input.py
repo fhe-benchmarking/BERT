@@ -94,7 +94,6 @@ def main():
 
     upload_dir.mkdir(parents=True, exist_ok=True)
 
-    manifest = []
     for idx, record in enumerate(records):
         print(f"Encrypting sample {idx + 1}/{len(records)} (target_idx={record['target_idx']})...")
         sample_dir = upload_dir / str(idx)
@@ -112,15 +111,6 @@ def main():
         attention_mask = np.array(record["attention_mask"], dtype=float)
         for i, mask in enumerate(encode_attention_mask(attention_mask)):
             np.save(sample_dir / f"attention_mask_{i}.npy", mask)
-
-        manifest.append({
-            "idx": idx,
-            "target_idx": record["target_idx"],
-            "dir": str(idx),
-        })
-
-    with open(upload_dir / "manifest.json", "w") as f:
-        json.dump(manifest, f, indent=2)
 
 
 if __name__ == "__main__":
