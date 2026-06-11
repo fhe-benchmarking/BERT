@@ -12,6 +12,7 @@ from desilofhe import (
     Engine,
     FixedRotationKey,
     Plaintext,
+    PublicKey,
     RelinearizationKey,
 )
 
@@ -45,6 +46,7 @@ class HE:
             compact=compact,
         )
 
+        self.public_key: PublicKey = self.engine.read_public_key(public_keys_dir / "public_key")
         self.conjugation_key: ConjugationKey = self.engine.read_conjugation_key(
             public_keys_dir / "conjugation_key"
         )
@@ -84,7 +86,6 @@ class HE:
 
         self.rotate_levels: dict[int, int] = defaultdict(int)
 
-        public_key = self.engine.read_public_key(public_keys_dir / "public_key")
         max_level = self.engine.max_level
 
         self.masks = dict()
@@ -100,12 +101,12 @@ class HE:
         layernorm_mask = np.array(([1] * 1 + [0] * 15) * 2**11)
         self.masks["layernorm"] = layernorm_mask
         self.masks["invsqrt_b"] = self.prepare_for_multiply(
-            self.engine.encrypt(layernorm_mask, public_key, max_level)
+            self.engine.encrypt(layernorm_mask, self.public_key, max_level)
         )
         self.masks["intermediate_dense"] = self.engine.read_light_plaintext(str(self.mask_path / "intermediate_dense"))
         self.masks["pooler_dense"] = self.engine.read_light_plaintext(str(self.mask_path / "pooler_dense"))
         self.masks["inv_a"] = self.engine.encrypt(
-            np.array(([1] * 12 + [0.0] * 4) * 2**11), public_key, max_level
+            np.array(([1] * 12 + [0.0] * 4) * 2**11), self.public_key, max_level
         )
 
         for i in range(1, 128):

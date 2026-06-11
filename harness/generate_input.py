@@ -26,16 +26,16 @@ def main():
     Generate random value representing the query in the workload.
     """
     __, params, seed, __, __, __, dataset_name = parse_submission_arguments('Generate input for FHE benchmark.')
-    PIXELS_PATH = params.get_test_input_file()
+    INPUT_PATH = params.get_test_input_file()
     LABELS_PATH = params.get_ground_truth_labels_file()
 
-    PIXELS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    INPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     num_samples = params.get_batch_size()
     match dataset_name:
         case "mrpc":
-            return mrpc.export_test_pixels_labels(
+            return mrpc.export_test_sentence_pairs(
                     data_dir = params.datadir(),
-                    samples_file=PIXELS_PATH,
+                    samples_file=INPUT_PATH,
                     labels_file=LABELS_PATH,
                     num_samples=num_samples,
                     seed=seed)

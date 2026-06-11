@@ -49,7 +49,6 @@ def main():
                 "input_ids": encoding["input_ids"],
                 "token_type_ids": encoding["token_type_ids"],
                 "attention_mask": encoding["attention_mask"],
-                "label": record["label"],
             }) + "\n")
 
     print(f"Preprocessed {len(records)} records -> {output_path}")
