@@ -77,7 +77,6 @@ def main():
         warm_cache(lp_path)
         return
 
-    print(f"Loading model {MODEL_ID}...")
     model = BertForNextSentencePrediction.from_pretrained(MODEL_ID)
     model.eval()
 
@@ -107,7 +106,6 @@ def main():
 
     print("Warming page cache...")
     warm_cache(lp_path)
-    print(f"Light plaintexts written to {lp_path}")
 
 
 if __name__ == "__main__":
