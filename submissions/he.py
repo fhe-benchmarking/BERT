@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 
 from params import InstanceParams
-from timer import Timer
+from .timer import Timer
 from desilofhe import (
     BootstrapKey,
     Ciphertext,
