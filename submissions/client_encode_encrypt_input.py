@@ -74,7 +74,6 @@ def main():
         config = json.load(f)
     compact = config["compact"]
 
-    print("Initializing engine...")
     engine = Engine(
         use_bootstrap_to_14_levels=True,
         mode="parallel",
@@ -83,7 +82,6 @@ def main():
     )
     secret_key = engine.read_secret_key(io_dir / "secret_key")
 
-    print("Loading embedding model...")
     embedding_model = BertForNextSentencePrediction.from_pretrained(EMBED_MODEL_ID).bert.embeddings
     embedding_model.eval()
 
@@ -124,8 +122,6 @@ def main():
 
     with open(upload_dir / "manifest.json", "w") as f:
         json.dump(manifest, f, indent=2)
-
-    print(f"Encrypted {len(records)} samples -> {upload_dir}")
 
 
 if __name__ == "__main__":
