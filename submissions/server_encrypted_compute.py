@@ -1,12 +1,10 @@
 import json
 import sys
-from pathlib import Path
 
 import numpy as np
 
+from params import InstanceParams
 from thor.he import HE
-
-INSTANCE_NAMES = ["single", "small", "medium", "large"]
 
 
 def main():
@@ -14,8 +12,9 @@ def main():
         print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
-    size = int(sys.argv[1])
-    io_dir = Path("io") / INSTANCE_NAMES[size]
+    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
+    io_dir = params.iodir()
+    batch_size = params.get_batch_size()
 
     with open(io_dir / "thor_config.json") as f:
         config = json.load(f)
@@ -29,19 +28,12 @@ def main():
     download_dir = io_dir / "ciphertexts_download"
     download_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(upload_dir / "manifest.json") as f:
-        manifest = json.load(f)
-
-    result_manifest = []
     total_compute_seconds = 0.0
     total_elapsed_seconds = 0.0
 
-    for entry in manifest:
-        idx = entry["idx"]
-        target_idx = entry["target_idx"]
-        sample_dir = upload_dir / entry["dir"]
-
-        print(f"Processing sample {idx + 1}/{len(manifest)} (target_idx={target_idx})...")
+    for idx in range(batch_size):
+        sample_dir = upload_dir / str(idx)
+        print(f"Processing sample {idx + 1}/{batch_size}...")
 
         x = np.empty((4,), dtype=object)
         for i in range(4):
@@ -72,16 +64,6 @@ def main():
         out_dir.mkdir(exist_ok=True)
         for i in range(len(x)):
             he.engine.write_ciphertext(x[i], str(out_dir / f"output_ct_{i}"))
-
-        result_manifest.append({
-            "idx": idx,
-            "target_idx": target_idx,
-            "dir": str(idx),
-            "n_outputs": len(x),
-        })
-
-    with open(download_dir / "manifest.json", "w") as f:
-        json.dump(result_manifest, f, indent=2)
 
     steps = {
         "Encrypted computation": round(total_compute_seconds, 4),
