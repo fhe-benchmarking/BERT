@@ -116,7 +116,6 @@ def main():
         manifest.append({
             "idx": idx,
             "target_idx": record["target_idx"],
-            "label": record["label"],
             "dir": str(idx),
         })
 
