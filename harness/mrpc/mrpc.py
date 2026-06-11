@@ -64,7 +64,7 @@ def load_and_preprocess_data(data_dir=DATA_DIR):
 
 
 # Function to export test data to separate files.
-def export_test_pixels_labels(data_dir=DATA_DIR, samples_file="mrpc_samples.jsonl", labels_file="mrpc_labels.txt", num_samples=-1, seed=None):
+def export_test_sentence_pairs(data_dir=DATA_DIR, samples_file="mrpc_samples.jsonl", labels_file="mrpc_labels.txt", num_samples=-1, seed=None):
     """
     Export MRPC validation samples to separate input and label files.
 
@@ -93,7 +93,6 @@ def export_test_pixels_labels(data_dir=DATA_DIR, samples_file="mrpc_samples.json
                 "target_idx": row["idx"],
                 "sentence1": row["sentence1"],
                 "sentence2": row["sentence2"],
-                "label": row["label"],
             }) + "\n")
             lf.write(f"{row['label']}\n")
 
@@ -111,7 +110,7 @@ def export_test_data(data_dir=DATA_DIR, output_file='mrpc_test.txt', num_samples
     base_name = str(output_file).rsplit('.', 1)[0] if '.' in str(output_file) else str(output_file)
     labels_file = f"{base_name}_labels.txt"
     samples_file = f"{base_name}_samples.jsonl"
-    export_test_pixels_labels(
+    export_test_sentence_pairs(
         data_dir=data_dir,
         samples_file=samples_file,
         labels_file=labels_file,

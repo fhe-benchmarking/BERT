@@ -27,11 +27,11 @@ from mrpc import mrpc
 
 def main():
     """
-    Usage:  python3 cleartext_impl.py  <input_pixels_path>  <output_labels_path>
+    Usage:  python3 cleartext_impl.py  <input_sentence_pairs_path>  <output_labels_path>
     """
 
     if len(sys.argv) != 4:
-        sys.exit("Usage: cleartext_impl.py <input_pixels_path> <output_labels_path> <dataset_name>")
+        sys.exit("Usage: cleartext_impl.py <input_sentence_pairs_path> <output_labels_path> <dataset_name>")
 
     # Paths to trained models
     minst_path = "harness/mnist/mnist_ffnn_model.pth"
@@ -42,10 +42,10 @@ def main():
     DATASET_NAME = sys.argv[3]
 
     match DATASET_NAME:
-        case "mnist": 
+        case "mnist":
             return mnist.run_predict(
-                model_path=minst_path, 
-                pixels_file=INPUT_PATH, 
+                model_path=minst_path,
+                pixels_file=INPUT_PATH,
                 predictions_file=OUTPUT_PATH)
         case "cifar10":
             return cifar10.run_predict(
