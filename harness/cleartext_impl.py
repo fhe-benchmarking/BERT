@@ -24,11 +24,11 @@ from mrpc import mrpc
 
 def main():
     """
-    Usage:  python3 cleartext_impl.py  <input_pixels_path>  <output_labels_path>
+    Usage:  python3 cleartext_impl.py  <input_sentence_pairs_path>  <output_labels_path>
     """
 
     if len(sys.argv) != 4:
-        sys.exit("Usage: cleartext_impl.py <input_pixels_path> <output_labels_path> <dataset_name>")
+        sys.exit("Usage: cleartext_impl.py <input_sentence_pairs_path> <output_labels_path> <dataset_name>")
 
     INPUT_PATH = Path(sys.argv[1])
     OUTPUT_PATH = Path(sys.argv[2])
