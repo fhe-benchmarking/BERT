@@ -9,7 +9,7 @@ from transformers import BertForNextSentencePrediction
 from params import InstanceParams
 
 # For encoding, base model is used.
-EMBED_MODEL_ID = "google-bert/bert-base-uncased"
+EMBED_MODEL_ID = "google-bert/bert-base-cased"
 EMBED_LEVEL = 9
 
 
