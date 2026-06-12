@@ -4,7 +4,7 @@ import sys
 import numpy as np
 
 from params import InstanceParams
-from thor.he import HE
+from he import HE
 
 
 def main():
