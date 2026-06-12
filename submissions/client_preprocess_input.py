@@ -5,7 +5,7 @@ from params import InstanceParams
 from transformers import AutoTokenizer
 
 # For encoding, base model is used.
-MODEL_ID = "google-bert/bert-base-uncased"
+MODEL_ID = "google-bert/bert-base-cased"
 MAX_LENGTH = 128
 
 
