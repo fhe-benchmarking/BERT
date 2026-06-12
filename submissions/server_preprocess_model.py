@@ -7,7 +7,7 @@ from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
 
 from params import InstanceParams
-from thor.encode_weights import (
+from encode_weights import (
     pre_encode_masks,
     pre_encode_stage_03,
     pre_encode_stage_04,
