@@ -38,12 +38,6 @@ def main():
     harness_dir = params.rootdir/"harness"
     exec_dir = params.rootdir/"submissions"
 
-    # check whether the exec_dir contains a subdirectory equals to the model name.
-    model_exec_dir = exec_dir / model_name
-    if not model_exec_dir.is_dir():
-        print(f"[harness]: Model directory {model_exec_dir} not found.")
-        sys.exit(1)
-
     # check whether the dataset exist
     dataset_exec_dir = harness_dir/dataset_name
     if not dataset_exec_dir.is_dir():
