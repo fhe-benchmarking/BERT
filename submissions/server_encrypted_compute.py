@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 
@@ -8,11 +9,12 @@ from he import HE
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('size', type=int)
+    parser.add_argument('thread_count', type=int, nargs='?', default=16)
+    args = parser.parse_args()
 
-    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
+    params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     batch_size = params.get_batch_size()
 
@@ -22,7 +24,7 @@ def main():
     bootstrap_key_size = config["bootstrap_key_size"]
 
     print("Loading keys and weights...")
-    he = HE(params, compact, bootstrap_key_size)
+    he = HE(params, compact, bootstrap_key_size, thread_count=args.thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
