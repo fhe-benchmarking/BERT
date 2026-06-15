@@ -25,7 +25,7 @@ def main():
     """
     Generate random value representing the query in the workload.
     """
-    __, params, seed, __, __, __, dataset_name = parse_submission_arguments('Generate input for FHE benchmark.')
+    __, params, seed, __, __, __, dataset_name, __, __ = parse_submission_arguments('Generate input for FHE benchmark.')
     INPUT_PATH = params.get_test_input_file()
     LABELS_PATH = params.get_ground_truth_labels_file()
 
