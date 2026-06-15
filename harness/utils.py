@@ -34,7 +34,7 @@ _bandwidth = {}
 # Global variable to store model quality metrics
 _model_quality = {}
 
-def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, str, str, int]:
+def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, str, str, int, int]:
     """
     Get the arguments of the submission. Populate arguments as needed for the workload.
     """
@@ -54,6 +54,8 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Pick a dataset run (default: mrpc)')
     parser.add_argument('--thread_count', type=int, default=16,
                         help='Number of threads for the FHE engine (default: 16)')
+    parser.add_argument('--parallel_sample_count', type=int, default=1,
+                        help='Number of samples to process in parallel during server computation (default: 1)')
 
     args = parser.parse_args()
     size = args.size
@@ -61,6 +63,7 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
     num_runs = args.num_runs
     clrtxt = args.clrtxt
     thread_count = args.thread_count
+    parallel_sample_count = args.parallel_sample_count
 
     # adding model and dataset to the arguments
     model_name = args.model.lower()
@@ -68,7 +71,7 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
 
     # Use params.py to get instance parameters
     params = InstanceParams(size, dataset=dataset_name)
-    return size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count
+    return size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count, parallel_sample_count
 
 def ensure_directories(rootdir: Path):
     """ Check that the current directory has sub-directories

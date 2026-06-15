@@ -28,7 +28,7 @@ def main():
 
     # 0. Prepare running
     # Get the arguments
-    size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
+    size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count, parallel_sample_count = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
     test = instance_name(size)
     print(f"\n[harness] Running submission for {test} inference")
 
@@ -100,7 +100,7 @@ def main():
         utils.log_size(io_dir / "ciphertexts_upload", "Encrypted input")
 
         # 7. Server side: Run the encrypted processing run exec_dir/server_encrypted_compute
-        utils.run_exe_or_python(exec_dir, "server_encrypted_compute", str(size), str(thread_count))
+        utils.run_exe_or_python(exec_dir, "server_encrypted_compute", str(size), str(thread_count), str(parallel_sample_count))
         utils.log_step(7, "Encrypted computation")
         # Report size of encrypted results
         utils.log_size(io_dir / "ciphertexts_download", "Encrypted results")
