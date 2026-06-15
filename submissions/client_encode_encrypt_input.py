@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 
@@ -57,11 +58,12 @@ def encode_attention_mask(attention_mask):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('size', type=int)
+    parser.add_argument('thread_count', type=int, nargs='?', default=16)
+    args = parser.parse_args()
 
-    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
+    params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     preprocessed_path = params.io_intermediate_dir() / "client_preprocessed_input"
     upload_dir = io_dir / "ciphertexts_upload"
@@ -74,12 +76,15 @@ def main():
         config = json.load(f)
     compact = config["compact"]
 
-    engine = Engine(
-        use_bootstrap_to_14_levels=True,
-        mode="parallel",
-        thread_count=16,
-        compact=compact,
-    )
+    if args.thread_count == 1:
+        engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
+    else:
+        engine = Engine(
+            use_bootstrap_to_14_levels=True,
+            mode="parallel",
+            thread_count=args.thread_count,
+            compact=compact,
+        )
     secret_key = engine.read_secret_key(io_dir / "secret_key")
 
     embedding_model = BertForNextSentencePrediction.from_pretrained(EMBED_MODEL_ID).bert.embeddings

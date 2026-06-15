@@ -29,7 +29,7 @@ class DeltaCiphertext:
 
 
 class HE:
-    def __init__(self, params: InstanceParams, compact: bool, bootstrap_key_size: str):
+    def __init__(self, params: InstanceParams, compact: bool, bootstrap_key_size: str, thread_count: int = 16):
         self.compact = compact
         self.bootstrap_key_size = bootstrap_key_size
         self.timer = Timer()
@@ -41,12 +41,15 @@ class HE:
         public_keys_dir = params.iodir() / "public_keys"
         fixed_rotation_keys_dir = public_keys_dir / "fixed_rotation_keys"
 
-        self.engine = Engine(
-            use_bootstrap_to_14_levels=True,
-            mode="parallel",
-            thread_count=16,
-            compact=compact,
-        )
+        if thread_count == 1:
+            self.engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
+        else:
+            self.engine = Engine(
+                use_bootstrap_to_14_levels=True,
+                mode="parallel",
+                thread_count=thread_count,
+                compact=compact,
+            )
 
         self.public_key: PublicKey = self.engine.read_public_key(public_keys_dir / "public_key")
         self.conjugation_key: ConjugationKey = self.engine.read_conjugation_key(

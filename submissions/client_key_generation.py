@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 
@@ -63,11 +64,12 @@ _ROTATION_CONTEXTS = [
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('size', type=int)
+    parser.add_argument('thread_count', type=int, nargs='?', default=16)
+    args = parser.parse_args()
 
-    params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
+    params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     public_keys_dir = io_dir / "public_keys"
     fixed_rotation_keys_dir = public_keys_dir / "fixed_rotation_keys"
@@ -83,12 +85,15 @@ def main():
 
     print(f"compact={compact}  bootstrap_key_size={bootstrap_key_size}")
 
-    engine = Engine(
-        use_bootstrap_to_14_levels=True,
-        mode="parallel",
-        thread_count=16,
-        compact=compact,
-    )
+    if args.thread_count == 1:
+        engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
+    else:
+        engine = Engine(
+            use_bootstrap_to_14_levels=True,
+            mode="parallel",
+            thread_count=args.thread_count,
+            compact=compact,
+        )
 
     print("Generating secret key...")
     secret_key = engine.create_secret_key()
