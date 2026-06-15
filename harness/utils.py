@@ -34,7 +34,7 @@ _bandwidth = {}
 # Global variable to store model quality metrics
 _model_quality = {}
 
-def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, str, str]:
+def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int, int, int, str, str, int]:
     """
     Get the arguments of the submission. Populate arguments as needed for the workload.
     """
@@ -52,12 +52,15 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Pick a model run (default: thor)')
     parser.add_argument('--dataset', default='mrpc', type=str,
                         help='Pick a dataset run (default: mrpc)')
+    parser.add_argument('--thread_count', type=int, default=16,
+                        help='Number of threads for the FHE engine (default: 16)')
 
     args = parser.parse_args()
     size = args.size
     seed = args.seed
     num_runs = args.num_runs
     clrtxt = args.clrtxt
+    thread_count = args.thread_count
 
     # adding model and dataset to the arguments
     model_name = args.model.lower()
@@ -65,7 +68,7 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
 
     # Use params.py to get instance parameters
     params = InstanceParams(size, dataset=dataset_name)
-    return size, params, seed, num_runs, clrtxt, model_name, dataset_name
+    return size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count
 
 def ensure_directories(rootdir: Path):
     """ Check that the current directory has sub-directories

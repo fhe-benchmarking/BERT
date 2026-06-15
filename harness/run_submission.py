@@ -28,7 +28,7 @@ def main():
 
     # 0. Prepare running
     # Get the arguments
-    size, params, seed, num_runs, clrtxt, model_name, dataset_name = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
+    size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
     test = instance_name(size)
     print(f"\n[harness] Running submission for {test} inference")
 
@@ -66,7 +66,7 @@ def main():
     # Note: this does not use the rng seed above, it lets the implementation
     #   handle its own prg needs. It means that even if called with the same
     #   seed multiple times, the keys and ciphertexts will still be different.
-    utils.run_exe_or_python(exec_dir, "client_key_generation", str(size))
+    utils.run_exe_or_python(exec_dir, "client_key_generation", str(size), str(thread_count))
     utils.log_step(2, "Key Generation")
     # Report size of keys and encrypted data
     utils.log_size(io_dir / "public_keys", "Public and evaluation keys")
@@ -95,18 +95,18 @@ def main():
         utils.log_step(5, "Input preprocessing")
 
         # 6. Client-side: Encrypt the input
-        utils.run_exe_or_python(exec_dir, "client_encode_encrypt_input", str(size))
+        utils.run_exe_or_python(exec_dir, "client_encode_encrypt_input", str(size), str(thread_count))
         utils.log_step(6, "Input encryption")
         utils.log_size(io_dir / "ciphertexts_upload", "Encrypted input")
 
         # 7. Server side: Run the encrypted processing run exec_dir/server_encrypted_compute
-        utils.run_exe_or_python(exec_dir, "server_encrypted_compute", str(size))
+        utils.run_exe_or_python(exec_dir, "server_encrypted_compute", str(size), str(thread_count))
         utils.log_step(7, "Encrypted computation")
         # Report size of encrypted results
         utils.log_size(io_dir / "ciphertexts_download", "Encrypted results")
 
         # 8. Client-side: decrypt
-        utils.run_exe_or_python(exec_dir, "client_decrypt_decode", str(size))
+        utils.run_exe_or_python(exec_dir, "client_decrypt_decode", str(size), str(thread_count))
         utils.log_step(8, "Result decryption")
 
         # 9. Client-side: post-process
