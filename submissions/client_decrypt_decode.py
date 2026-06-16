@@ -48,9 +48,9 @@ def main():
                 records.append(json.loads(line))
 
     intermediate_dir.mkdir(parents=True, exist_ok=True)
-    output_path = intermediate_dir / "decrypted_results.jsonl"
+    decrypted_path = intermediate_dir / "decrypted_results.jsonl"
 
-    with open(output_path, "w") as out:
+    with open(decrypted_path, "w") as out:
         for idx, src in enumerate(records):
             target_idx = src["target_idx"]
             sample_dir = download_dir / str(idx)
@@ -74,7 +74,7 @@ def main():
 
             out.write(json.dumps(result) + "\n")
 
-    print(f"Decrypted {len(records)} samples -> {output_path}")
+    print(f"Decrypted {len(records)} samples -> {decrypted_path}")
 
 
 if __name__ == "__main__":
