@@ -17,9 +17,6 @@ def main():
     parser.add_argument('parallel_sample_count', type=int, nargs='?', default=1)
     args = parser.parse_args()
 
-    if args.parallel_sample_count > 1:
-        print("Warning: thor_gpu does not support parallel sample processing.")
-
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     batch_size = params.get_batch_size()
