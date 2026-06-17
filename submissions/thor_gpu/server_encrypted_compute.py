@@ -1,0 +1,97 @@
+import argparse
+import json
+import queue
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+import numpy as np
+
+from params import InstanceParams
+from he import HE
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('size', type=int)
+    parser.add_argument('thread_count', type=int, nargs='?', default=16)
+    parser.add_argument('parallel_sample_count', type=int, nargs='?', default=1)
+    args = parser.parse_args()
+
+    if args.parallel_sample_count > 1:
+        print("Warning: thor_gpu does not support parallel sample processing.")
+
+    params = InstanceParams(args.size, dataset="mrpc")
+    io_dir = params.iodir()
+    batch_size = params.get_batch_size()
+
+    with open(io_dir / "thor_config.json") as f:
+        config = json.load(f)
+    compact = config["compact"]
+    bootstrap_key_size = config["bootstrap_key_size"]
+
+    he_pool = queue.Queue()
+    for _ in range(args.parallel_sample_count):
+        he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=args.thread_count))
+
+    upload_dir = io_dir / "ciphertexts_upload"
+    download_dir = io_dir / "ciphertexts_download"
+    download_dir.mkdir(parents=True, exist_ok=True)
+
+    total_compute_seconds = 0.0
+    total_elapsed_seconds = 0.0
+    lock = threading.Lock()
+
+    def process_sample(idx):
+        nonlocal total_compute_seconds, total_elapsed_seconds
+        he = he_pool.get()
+        try:
+            sample_dir = upload_dir / str(idx)
+            x = np.empty((4,), dtype=object)
+
+            for i in range(4):
+                x[i] = he.engine.read_ciphertext(str(sample_dir / f"embedding_ct_{i}"))
+
+            clear_attention_mask = [
+                np.load(sample_dir / f"attention_mask_{i}.npy")
+                for i in range(8)
+            ]
+
+            he.timer.reset()
+
+            for layer_idx in range(12):
+                x = he.forward_layer(x, layer_idx, clear_attention_mask)
+
+            x = he.stage_17_pooler(x)
+            x = he.stage_18_classifier(x)
+
+            elapsed = he.timer.elapsed
+            compute = he.timer.compute_elapsed
+
+            with lock:
+                total_compute_seconds += compute
+                total_elapsed_seconds += elapsed
+
+            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, Elapsed: {elapsed:.3f}s")
+
+            out_dir = download_dir / str(idx)
+            out_dir.mkdir(exist_ok=True)
+            for i in range(len(x)):
+                he.engine.write_ciphertext(x[i], str(out_dir / f"output_ct_{i}"))
+        finally:
+            he_pool.put(he)
+
+    with ThreadPoolExecutor(max_workers=args.parallel_sample_count) as executor:
+        list(executor.map(process_sample, range(batch_size)))
+
+    steps = {
+        "Encrypted computation": round(total_compute_seconds, 4),
+        "Total": round(total_elapsed_seconds, 4),
+    }
+    with open(io_dir / "server_reported_steps.json", "w") as f:
+        json.dump(steps, f, indent=2)
+
+    print(f"Total across all samples - Compute: {total_compute_seconds:.3f}s, Elaspsed: {total_elapsed_seconds:.3f}s")
+
+
+if __name__ == "__main__":
+    main()

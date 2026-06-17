@@ -48,8 +48,9 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Random seed for dataset and query generation')
     parser.add_argument('--clrtxt', type=int,
                         help='Specify with 1 if to rerun the cleartext computation')
-    parser.add_argument('--model', default='thor', type=str,
-                        help='Pick a model run (default: thor)')
+    parser.add_argument('--submission', default=None, type=str,
+                        help='Submission subdirectory under submissions/ '
+                             '(default: run the reference implementation at submissions/)')
     parser.add_argument('--dataset', default='mrpc', type=str,
                         help='Pick a dataset run (default: mrpc)')
     parser.add_argument('--thread_count', type=int, default=16,
@@ -65,13 +66,13 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
     thread_count = args.thread_count
     parallel_sample_count = args.parallel_sample_count
 
-    # adding model and dataset to the arguments
-    model_name = args.model.lower()
+    # adding submission and dataset to the arguments
+    submission_name = args.submission.lower() if args.submission else None
     dataset_name = args.dataset.lower()
 
     # Use params.py to get instance parameters
     params = InstanceParams(size, dataset=dataset_name)
-    return size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count, parallel_sample_count
+    return size, params, seed, num_runs, clrtxt, submission_name, dataset_name, thread_count, parallel_sample_count
 
 def ensure_directories(rootdir: Path):
     """ Check that the current directory has sub-directories
@@ -83,7 +84,7 @@ def ensure_directories(rootdir: Path):
                   f"not found in {rootdir}")
             sys.exit(1)
 
-def check_requirements(model_name: str):
+def check_requirements():
     """
     Check that required Python packages for the submission are importable.
     """
@@ -161,7 +162,8 @@ def human_readable_size(n: int):
         n /= 1024
     return f"{n:.1f}P"
 
-def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_name: str, size: int = 0):
+def save_run(path: Path, submission_report_path: Path, submission_name: str, dataset_name: str, size: int = 0):
+    submission_name = submission_name or "reference"
     global _timestamps
     global _timestampsStr
     global _bandwidth
@@ -181,7 +183,7 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
 
     if size == 0:
         json.dump({
-            "model_name": model_name,
+            "submission_name": submission_name,
             "dataset_name": dataset_name,
             "Timing": _timestampsStr,
             "Bandwidth": _bandwidth,
@@ -189,7 +191,7 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
         }, open(path, "w"), indent=2)
     else:
         json.dump({
-            "model_name": model_name,
+            "submission_name": submission_name,
             "dataset_name": dataset_name,
             "Timing": _timestampsStr,
             "Bandwidth": _bandwidth,

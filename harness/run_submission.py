@@ -28,7 +28,7 @@ def main():
 
     # 0. Prepare running
     # Get the arguments
-    size, params, seed, num_runs, clrtxt, model_name, dataset_name, thread_count, parallel_sample_count = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
+    size, params, seed, num_runs, clrtxt, submission_name, dataset_name, thread_count, parallel_sample_count = utils.parse_submission_arguments('Run ML Inference FHE benchmark.')
     test = instance_name(size)
     print(f"\n[harness] Running submission for {test} inference")
 
@@ -37,6 +37,11 @@ def main():
 
     harness_dir = params.rootdir/"harness"
     exec_dir = params.rootdir/"submissions"
+    if submission_name is not None:
+        exec_dir = exec_dir / submission_name
+        if not exec_dir.is_dir():
+            print(f"[harness]: Submission directory {exec_dir} not found.")
+            sys.exit(1)
 
     # check whether the dataset exist
     dataset_exec_dir = harness_dir/dataset_name
@@ -44,7 +49,7 @@ def main():
         print(f"[harness]: Dataset directory {dataset_exec_dir} not found.")
         sys.exit(1)
 
-    utils.check_requirements(model_name)
+    utils.check_requirements()
 
     # Remove and re-create IO directory
     io_dir = params.iodir()
@@ -140,7 +145,7 @@ def main():
         run_path = params.measuredir() / f"results-{run+1}.json"
         run_path.parent.mkdir(parents=True, exist_ok=True)
         submission_report_path = io_dir / "server_reported_steps.json"
-        utils.save_run(run_path, submission_report_path, model_name, dataset_name, size)
+        utils.save_run(run_path, submission_report_path, submission_name, dataset_name, size)
 
     print(f"\nAll steps completed for the {instance_name(size)} inference!")
 
