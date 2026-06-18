@@ -4,3 +4,4 @@ torchvision==0.24.1
 absl-py==2.3.0
 transformers>=4.40
 datasets>=2.19
+desilofhe>=1.14.0
