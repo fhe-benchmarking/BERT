@@ -85,15 +85,12 @@ def main():
 
     print(f"compact={compact}  bootstrap_key_size={bootstrap_key_size}")
 
-    if args.thread_count == 1:
-        engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
-    else:
-        engine = Engine(
-            use_bootstrap_to_14_levels=True,
-            mode="parallel",
-            thread_count=args.thread_count,
-            compact=compact,
-        )
+    engine = Engine(
+        use_bootstrap_to_14_levels=True,
+        mode="async gpu",
+        thread_count=1024,
+        compact=compact,
+    )
 
     print("Generating secret key...")
     secret_key = engine.create_secret_key()
