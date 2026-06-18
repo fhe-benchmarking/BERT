@@ -68,7 +68,7 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
     dataset_name = args.dataset.lower()
 
     # Use params.py to get instance parameters
-    params = InstanceParams(size)
+    params = InstanceParams(size, dataset=dataset_name)
     return size, params, seed, num_runs, clrtxt, remote_be, model_name, dataset_name
 
 def ensure_directories(rootdir: Path):

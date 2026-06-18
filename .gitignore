@@ -5,6 +5,7 @@ third_party/
 harness/__pycache__/
 harness/mnist/__pycache__/
 harness/cifar10/__pycache__/
+harness/mrpc/__pycache__/
 
 # Prerequisites
 *.d
@@ -73,9 +74,10 @@ harness/cifar10/data/
 harness/cifar10/cifar10_resnet20.pth
 harness/cifar10/cifar10_resnet20_model.pth
 
+# Temporary files for MRPC
+harness/mrpc/data/*
+
 
 # Remote-submission artifacts
 ek.lpk
 submission_remote/__pycache__/
-
-

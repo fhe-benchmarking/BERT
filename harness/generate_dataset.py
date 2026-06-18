@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 from mnist import mnist
 from cifar10 import cifar10
+from mrpc import mrpc
 
 def main():
     """
@@ -39,12 +40,17 @@ def main():
                 output_file=DATASET_PATH, 
                 num_samples=10000, 
                 seed=None)
-        case "cifar10": 
+        case "cifar10":
             return cifar10.export_test_data(
-                output_file=DATASET_PATH, 
-                num_samples=10000, 
+                output_file=DATASET_PATH,
+                num_samples=10000,
                 seed=None)
-        case _: 
+        case "mrpc":
+            return mrpc.export_test_data(
+                output_file=DATASET_PATH,
+                num_samples=-1,
+                seed=None)
+        case _:
             raise ValueError(f"Unsupported dataset name: {DATASET_NAME}")
 
 if __name__ == "__main__":

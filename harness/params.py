@@ -23,6 +23,11 @@ SMALL = 1
 MEDIUM = 2
 LARGE = 3
 
+BATCH_SIZES = {
+    "default": [1, 100, 1000, 10000],
+    "mrpc":    [1,  50,  200,   408],
+}
+
 def instance_name(size):
     """Return the string name of the instance size."""
     if size > LARGE:
@@ -33,16 +38,15 @@ def instance_name(size):
 class InstanceParams:
     """Parameters that differ for different instance sizes."""
 
-    def __init__(self, size, rootdir=None):
+    def __init__(self, size, rootdir=None, dataset=None):
         """Constructor."""
         self.size = size
         self.rootdir = Path(rootdir) if rootdir else Path.cwd()
 
         if size > LARGE:
             raise ValueError("Invalid instance size")
-        
-        batch_size =              [1, 100, 1000, 10000]
 
+        batch_size = BATCH_SIZES.get(dataset, BATCH_SIZES["default"])
         self.batch_size = batch_size[size]
 
     def get_size(self):
