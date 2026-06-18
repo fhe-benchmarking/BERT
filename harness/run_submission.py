@@ -93,7 +93,7 @@ def main():
         utils.log_step(2.3 , "Communication: Upload evaluation key")
 
     # 3. Server-side: Preprocess the (encrypted) dataset using exec_dir/server_preprocess_model
-    utils.run_exe_or_python(model_exec_dir, "server_preprocess_model")
+    utils.run_exe_or_python(model_exec_dir, "server_preprocess_model", str(size))
     utils.log_step(3, "Encrypted model preprocessing")
 
     # Run steps 4-10 multiple times if requested
