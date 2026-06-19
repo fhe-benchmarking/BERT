@@ -21,7 +21,7 @@ from encode_weights import (
     pre_encode_stage_18,
 )
 
-MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
+MODEL_ID = "desilo-ai/bert-base-uncased-finetuned-mrpc"
 PER_LAYER_STAGES = [
     "stage_03", "stage_04", "stage_05",
     "stage_10", "stage_11", "stage_12",
