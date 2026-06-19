@@ -10,7 +10,8 @@ from he import HE
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('size', type=int)
-    parser.add_argument('thread_count', type=int, nargs='?', default=16)
+    # For this gpu submission, we ignore the thread count from the submission script.
+    parser.add_argument('thread_count', help=argparse.SUPPRESS)
     parser.add_argument('parallel_sample_count', type=int, nargs='?', default=1)
     args = parser.parse_args()
 
@@ -26,7 +27,7 @@ def main():
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
 
-    he = HE(params, compact, bootstrap_key_size, thread_count=args.thread_count)
+    he = HE(params, compact, bootstrap_key_size, thread_count=1024)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
