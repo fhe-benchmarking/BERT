@@ -72,68 +72,37 @@ options:
 The single instance runs the inference for a single input and verifies the correctness of the obtained label compared to the ground-truth label.
 
 ```console
-$ python3 ./harness/run_submission.py 0 --seed 3 --num_runs 2 --dataset mnist --model mlp
- 
+$ python3 harness/run_submission.py 0 --seed 3
 
 [harness] Running submission for single inference
-[get_openfhe] Found OpenFHE at .../ml-inference/third_party/openfhe (use --force to rebuild).
--- FOUND PACKAGE OpenFHE
--- OpenFHE Version: 1.4.0
--- OpenFHE installed as shared libraries: ON
--- OpenFHE include files location: .../ml-inference/third_party/openfhe/include/openfhe
--- OpenFHE lib files location: .../ml-inference/third_party/openfhe/lib
--- OpenFHE Native Backend size: 64
--- FOUND PACKAGE Torch
--- Torch include dirs: .../ml-inference/third_party/libtorch/include;.../ml-inference/third_party/libtorch/include/torch/csrc/api/include
--- Torch libraries: torch;torch_library;.../ml-inference/third_party/libtorch/lib/libc10.so;.../ml-inference/third_party/libtorch/lib/libkineto.a
--- Configuring done
--- Generating done
--- Build files have been written to: .../ml-inference/submission/build
-[ 11%] Built target mlp_encryption_utils
-[ 33%] Built target client_key_generation
-[ 33%] Built target server_preprocess_model
-[ 44%] Built target mlp_openfhe
-[ 55%] Built target client_encode_encrypt_input
-[ 66%] Built target client_decrypt_decode
-[ 77%] Built target client_preprocess_input
-[ 88%] Built target client_postprocess
-[100%] Built target server_encrypted_compute
-13:21:55 [harness] 1: Harness: MNIST Test dataset generation completed (elapsed: 8.8735s)
-13:21:57 [harness] 2.2: Client: Key Generation completed (elapsed: 2.3535s)
-         [harness] Client: Public and evaluation keys size: 1.0G
-13:21:57 [harness] 3: Server: (Encrypted) model preprocessing completed (elapsed: 0.198s)
-
-         [harness] Run 1 of 2
-13:22:01 [harness] 4: Harness: Input generation for MNIST completed (elapsed: 3.8631s)
-13:22:01 [harness] 5: Client: Input preprocessing completed (elapsed: 0.1061s)
-13:22:01 [harness] 6: Client: Input encryption completed (elapsed: 0.201s)
-         [harness] Client: Encrypted input size: 5.0M
-         [server] Loading keys
-         [server] PyTorch model weights loaded successfully!
-         [server] run encrypted MNIST inference
-         [server] Execution time for ciphertext 0 : 12 seconds
-13:22:15 [harness] 7: Server: Encrypted ML Inference computation completed (elapsed: 13.4429s)
-         [harness] Client: Encrypted results size: 1.0M
-13:22:15 [harness] 8: Client: Result decryption completed (elapsed: 0.2832s)
-13:22:15 [harness] 9: Client: Result postprocessing completed (elapsed: 0.118s)
-[harness] PASS  (expected=7, got=7)
-[total latency] 29.4393s
-
-         [harness] Run 2 of 2
-13:22:21 [harness] 4: Harness: Input generation for MNIST completed (elapsed: 5.3879s)
-13:22:21 [harness] 5: Client: Input preprocessing completed (elapsed: 0.0852s)
-13:22:21 [harness] 6: Client: Input encryption completed (elapsed: 0.2011s)
-         [harness] Client: Encrypted input size: 5.0M
-         [server] Loading keys
-         [server] PyTorch model weights loaded successfully!
-         [server] run encrypted MNIST inference
-         [server] Execution time for ciphertext 0 : 13 seconds
-13:22:36 [harness] 7: Server: Encrypted ML Inference computation completed (elapsed: 15.0731s)
-         [harness] Client: Encrypted results size: 1.0M
-13:22:36 [harness] 8: Client: Result decryption completed (elapsed: 0.2518s)
-13:22:36 [harness] 9: Client: Result postprocessing completed (elapsed: 0.1047s)
-[harness] PASS  (expected=7, got=7)
-[total latency] 32.5287s
+14:28:20 [harness] 1: Test dataset generation completed (elapsed: 8.1716s)
+         compact=False  bootstrap_key_size=large
+         Generating secret key...
+         Generating conjugation key...
+         Generating relinearization key...
+         Generating bootstrap key (size=large)...
+         Generated 200 fixed rotation keys.
+         Generating public key...
+         Keys written to .../io/single/public_keys
+14:29:46 [harness] 2: Key Generation completed (elapsed: 86.3882s)
+         [harness] Public and evaluation keys size: 21.4G
+14:33:54 [harness] 3: Encrypted model preprocessing completed (elapsed: 248.5028s)
+14:34:03 [harness] 4: Input generation completed (elapsed: 8.2175s)
+         Preprocessed 1 records -> .../io/single/intermediate/client_preprocessed_input
+14:34:08 [harness] 5: Input preprocessing completed (elapsed: 4.999s)
+         Encrypting sample 1/1 (target_idx=2656)...
+14:34:14 [harness] 6: Input encryption completed (elapsed: 6.2271s)
+         [harness] Encrypted input size: 46.0M
+         Sample 1 - Compute: 5101.660s, Elapsed: 5201.851s
+16:01:45 [harness] 7: Encrypted computation completed (elapsed: 5251.1738s)
+         [harness] Encrypted results size: 30.0M
+         Decrypting sample 1/1 (target_idx=2656)...
+16:01:46 [harness] 8: Result decryption completed (elapsed: 0.9677s)
+16:01:46 [harness] 9: Result postprocessing completed (elapsed: 0.0267s)
+         [submission] Encrypted computation: 5101.6596s
+         [submission] Total: 5201.851s
+[harness] PASS  (expected=1, got=1)
+[total latency] 5614.6743s
 
 All steps completed for the single inference!
 ```
