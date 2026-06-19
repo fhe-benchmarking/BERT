@@ -15,8 +15,14 @@ run_submission.py - run the entire submission process, from build to verify
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import subprocess
 import sys
+
+# Quiet down transformers: only surface errors(e.g. hide the model LOAD REPORT
+# emitted when loading the MRPC checkpoint into a different head).
+os.environ.setdefault("TRANSFORMERS_VERBOSITY", "error")
+
 import numpy as np
 import utils
 from params import instance_name
