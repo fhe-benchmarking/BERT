@@ -66,15 +66,12 @@ def main():
             paused = he.timer.paused_time
             elapsed = he.timer.elapsed
 
-            total_compute_seconds += compute
-            total_paused_seconds += paused
-            total_elapsed_seconds += elapsed
-            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
-
             with lock:
                 total_compute_seconds += compute
                 total_elapsed_seconds += elapsed
                 total_paused_seconds += paused
+
+            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
