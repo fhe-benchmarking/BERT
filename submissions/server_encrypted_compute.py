@@ -74,7 +74,7 @@ def main():
             with lock:
                 total_compute_seconds += compute
                 total_elapsed_seconds += elapsed
-
+                total_paused_seconds += paused
 
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
