@@ -74,6 +74,8 @@ def main():
 
             print(f"  Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")s
 
+            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
+
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
             for i in range(len(x)):
