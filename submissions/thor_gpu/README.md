@@ -24,7 +24,7 @@ numpy>=1.20
 torch==2.9.1
 transformers>=4.40
 datasets>=2.19
-desilofhe>=1.14.0
+desilofhe>=1.14.1
 ```
 
 > **Important:** for GPU execution you must install a **CUDA build of `desilofhe`** instead of the
