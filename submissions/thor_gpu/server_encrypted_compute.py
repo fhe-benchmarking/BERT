@@ -12,11 +12,11 @@ def main():
     parser.add_argument('size', type=int)
     # For this gpu submission, we ignore the thread count from the submission script.
     parser.add_argument('thread_count', help=argparse.SUPPRESS)
-    parser.add_argument('parallel_sample_count', type=int, nargs='?', default=1)
+    parser.add_argument('parallel_sample_count', help=argparse.SUPPRESS)
     args = parser.parse_args()
 
-    if args.parallel_sample_count > 1:
-        print("Warning: thor_gpu does not support parallel sample processing.")
+    args.thread_count = 1024
+    args.parallel_sample_count = 1
 
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
@@ -27,7 +27,7 @@ def main():
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
 
-    he = HE(params, compact, bootstrap_key_size, thread_count=1024)
+    he = HE(params, compact, bootstrap_key_size, thread_count=args.thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
