@@ -32,12 +32,12 @@ def main():
         label = 0 if logits[0] > logits[1] else 1
         predictions.append(label)
 
-    output_path = params.get_encrypted_model_predictions_file()
-    with open(output_path, "w") as f:
+    encrypted_model_preds = params.get_encrypted_model_predictions_file()
+    with open(encrypted_model_preds, "w") as f:
         for label in predictions:
             f.write(f"{label}\n")
 
-    print(f"Wrote {len(predictions)} predictions -> {output_path}")
+    print(f"Wrote {len(predictions)} predictions -> {encrypted_model_preds}")
 
 
 if __name__ == "__main__":
