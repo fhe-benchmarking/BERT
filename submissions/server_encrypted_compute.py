@@ -35,6 +35,7 @@ def main():
     download_dir.mkdir(parents=True, exist_ok=True)
 
     total_compute_seconds = 0.0
+    total_paused_seconds = 0.0
     total_elapsed_seconds = 0.0
     lock = threading.Lock()
 
@@ -61,14 +62,16 @@ def main():
             x = he.stage_17_pooler(x)
             x = he.stage_18_classifier(x)
 
-            elapsed = he.timer.elapsed
             compute = he.timer.compute_elapsed
+            paused = he.timer.paused_time
+            elapsed = he.timer.elapsed
 
             with lock:
                 total_compute_seconds += compute
                 total_elapsed_seconds += elapsed
+                total_paused_seconds += paused
 
-            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, Elapsed: {elapsed:.3f}s")
+            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
@@ -82,6 +85,7 @@ def main():
 
     steps = {
         "Encrypted computation": round(total_compute_seconds, 4),
+        "I/O": round(total_paused_seconds, 4),
         "Total": round(total_elapsed_seconds, 4),
     }
     with open(io_dir / "server_reported_steps.json", "w") as f:
