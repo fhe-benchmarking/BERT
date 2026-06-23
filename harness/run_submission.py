@@ -137,8 +137,9 @@ def main():
             utils.log_step(10.1, "Harness: Run inference for harness plaintext model")
 
             # 10.2 Run the quality calculation
-            utils.calculate_quality(ground_truth_labels, encrypted_model_preds, "Encrypted model")
-            utils.calculate_quality(ground_truth_labels, harness_model_preds, "Harness model")
+            threshold = utils.QUALITY_THRESHOLDS.get(dataset_name)
+            utils.calculate_quality(ground_truth_labels, encrypted_model_preds, "Encrypted model", threshold)
+            utils.calculate_quality(ground_truth_labels, harness_model_preds, "Harness model", threshold)
             utils.log_step(10.2, "Harness: Run quality check")
 
         # 11. Store measurements

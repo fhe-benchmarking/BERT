@@ -104,8 +104,8 @@ class TextFormat:
     RESET = "\033[0m"
 
 def log_step(step_num: int, step_name: str, start: bool = False):
-    """ 
-    Helper function to print timestamp after each step with second precision 
+    """
+    Helper function to print timestamp after each step with second precision
     """
     global _last_timestamp
     global _timestamps
@@ -131,18 +131,18 @@ def log_step(step_num: int, step_name: str, start: bool = False):
 
 def log_size(path: Path, object_name: str, flag: bool = False, previous: int = 0):
     global _bandwidth
-    
+
     # Check if the path exists before trying to calculate size
     if not path.exists():
         print(f"         [harness] Warning: {object_name} path does not exist: {path}")
         _bandwidth[object_name] = "0B"
         return 0
-    
+
     size = int(subprocess.run(["du", "-sb", path], check=True,
                            capture_output=True, text=True).stdout.split()[0])
     if(flag):
         size -= previous
-    
+
     print(f"{TextFormat.YELLOW}         [harness] {object_name} size: {human_readable_size(size)}{TextFormat.RESET}")
 
     _bandwidth[object_name] = human_readable_size(size)
@@ -193,11 +193,16 @@ def save_run(path: Path, submission_report_path: Path, model_name: str, dataset_
 
     print("[total latency]", f"{round(sum(_timestamps.values()), 4)}s")
 
-def calculate_quality(label_file: Path, pred_file: Path, tag: str):
+QUALITY_THRESHOLDS = {
+    "mrpc": 0.75,
+}
+
+def calculate_quality(label_file: Path, pred_file: Path, tag: str, threshold: float = None):
     """
     Calculates accuracy by comparing labels line by line.
     Label file and predictions file should contain one label per line.
-    Logs accuracy metric and prints results.
+    Logs accuracy metric and prints results. If threshold is given, also
+    prints a PASS/FAIL line against that threshold.
     """
 
     try:
@@ -219,6 +224,12 @@ def calculate_quality(label_file: Path, pred_file: Path, tag: str):
     accuracy = correct_pred / num_samples
     print(f"[harness] {tag}: {accuracy:.4f} ({correct_pred}/{num_samples} correct)")
     log_quality(correct_pred, num_samples, f"{tag} quality")
+
+    if threshold is not None:
+        passed = accuracy >= threshold
+        status = "PASS" if passed else "FAIL"
+        color = TextFormat.GREEN if passed else TextFormat.RED
+        print(f"{color}[harness] {tag} threshold ({threshold:.0%}): {status}{TextFormat.RESET}")
 
 
 def log_quality(correct_predictions, total_samples, tag):
