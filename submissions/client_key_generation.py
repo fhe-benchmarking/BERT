@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 
 from desilofhe import Engine
@@ -66,8 +67,9 @@ _ROTATION_CONTEXTS = [
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('size', type=int)
-    parser.add_argument('thread_count', type=int, nargs='?', default=16)
     args = parser.parse_args()
+
+    thread_count = min(16, os.cpu_count() or 1)
 
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
@@ -85,13 +87,13 @@ def main():
 
     print(f"compact={compact}  bootstrap_key_size={bootstrap_key_size}")
 
-    if args.thread_count == 1:
+    if thread_count == 1:
         engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
     else:
         engine = Engine(
             use_bootstrap_to_14_levels=True,
             mode="parallel",
-            thread_count=args.thread_count,
+            thread_count=thread_count,
             compact=compact,
         )
 

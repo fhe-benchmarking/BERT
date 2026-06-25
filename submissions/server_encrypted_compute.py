@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 
 import numpy as np
@@ -11,8 +12,9 @@ from he import HE
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('size', type=int)
-    parser.add_argument('thread_count', type=int, nargs='?', default=16)
     args = parser.parse_args()
+
+    thread_count = min(16, os.cpu_count() or 1)
 
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
@@ -24,7 +26,7 @@ def main():
     bootstrap_key_size = config["bootstrap_key_size"]
 
     print("Loading keys and weights...")
-    he = HE(params, compact, bootstrap_key_size, thread_count=args.thread_count)
+    he = HE(params, compact, bootstrap_key_size, thread_count=thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
@@ -64,7 +66,7 @@ def main():
         total_compute_seconds += compute
         total_paused_seconds += paused
         total_elapsed_seconds += elapsed
-        print(f"  Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")s
+        print(f"  Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
         out_dir = download_dir / str(idx)
         out_dir.mkdir(exist_ok=True)
