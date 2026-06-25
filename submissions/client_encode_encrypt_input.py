@@ -63,8 +63,6 @@ def main():
     parser.add_argument('size', type=int)
     args = parser.parse_args()
 
-    thread_count = min(16, os.cpu_count() or 1)
-
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     preprocessed_path = params.io_intermediate_dir() / "client_preprocessed_input"
@@ -77,6 +75,7 @@ def main():
     with open(io_dir / "thor_config.json") as f:
         config = json.load(f)
     compact = config["compact"]
+    thread_count = min(16, os.cpu_count() or 1)
 
     if thread_count == 1:
         engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)

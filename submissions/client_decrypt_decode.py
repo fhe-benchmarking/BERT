@@ -14,8 +14,6 @@ def main():
     parser.add_argument('size', type=int)
     args = parser.parse_args()
 
-    thread_count = min(16, os.cpu_count() or 1)
-
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     download_dir = io_dir / "ciphertexts_download"
@@ -30,6 +28,7 @@ def main():
     with open(config_path) as f:
         config = json.load(f)
     compact = config["compact"]
+    thread_count = min(16, os.cpu_count() or 1)
 
     secret_key_path = io_dir / "secret_key"
     if not secret_key_path.exists():

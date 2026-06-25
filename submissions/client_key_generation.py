@@ -69,8 +69,6 @@ def main():
     parser.add_argument('size', type=int)
     args = parser.parse_args()
 
-    thread_count = min(16, os.cpu_count() or 1)
-
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     public_keys_dir = io_dir / "public_keys"
@@ -82,6 +80,8 @@ def main():
     compact = COMPACT
     bootstrap_key_size = "medium" if compact else "large"
     config = {"compact": compact, "bootstrap_key_size": bootstrap_key_size}
+    thread_count = min(16, os.cpu_count() or 1)
+
     with open(io_dir / "thor_config.json", "w") as f:
         json.dump(config, f, indent=2)
 

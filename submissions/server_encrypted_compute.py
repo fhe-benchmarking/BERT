@@ -14,8 +14,6 @@ def main():
     parser.add_argument('size', type=int)
     args = parser.parse_args()
 
-    thread_count = min(16, os.cpu_count() or 1)
-
     params = InstanceParams(args.size, dataset="mrpc")
     io_dir = params.iodir()
     batch_size = params.get_batch_size()
@@ -24,6 +22,7 @@ def main():
         config = json.load(f)
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
+    thread_count = min(16, os.cpu_count() or 1)
 
     print("Loading keys and weights...")
     he = HE(params, compact, bootstrap_key_size, thread_count=thread_count)
