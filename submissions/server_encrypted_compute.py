@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+import math
 import queue
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -25,11 +26,16 @@ def main():
         config = json.load(f)
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
-    thread_count = min(16, os.cpu_count() or 1)
 
+    cpu_count = os.cpu_count() or 1
+    thread_count = min(16, cpu_count)
+    worker_count = math.ceil(cpu_count / 16)
     he_pool = queue.Queue()
-    for _ in range(args.parallel_sample_count):
+    for _ in range(worker_count):
         he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
+
+    print("Loading keys and weights...")
+    he = HE(params, compact, bootstrap_key_size, thread_count=thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
@@ -41,7 +47,7 @@ def main():
     lock = threading.Lock()
 
     def process_sample(idx):
-        nonlocal total_compute_seconds, total_elapsed_seconds
+        nonlocal total_compute_seconds, total_paused_seconds, total_elapsed_seconds
         he = he_pool.get()
         try:
             sample_dir = upload_dir / str(idx)
@@ -72,8 +78,6 @@ def main():
                 total_paused_seconds += paused
                 total_elapsed_seconds += elapsed
 
-            print(f"  Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")s
-
             print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
             out_dir = download_dir / str(idx)
@@ -83,7 +87,7 @@ def main():
         finally:
             he_pool.put(he)
 
-    with ThreadPoolExecutor(max_workers=args.parallel_sample_count) as executor:
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
         list(executor.map(process_sample, range(batch_size)))
 
     steps = {
@@ -94,7 +98,7 @@ def main():
     with open(io_dir / "server_reported_steps.json", "w") as f:
         json.dump(steps, f, indent=2)
 
-    print(f"Total across all samples - Compute: {total_compute_seconds:.3f}s, Elaspsed: {total_elapsed_seconds:.3f}s")
+    print(f"Total across all samples - Compute: {total_compute_seconds:.3f}s, I/O: {total_paused_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
 
 
 if __name__ == "__main__":
