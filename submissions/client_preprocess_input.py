@@ -4,8 +4,7 @@ import sys
 from params import InstanceParams
 from transformers import AutoTokenizer
 
-# For encoding, base model is used.
-MODEL_ID = "google-bert/bert-base-cased"
+MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 MAX_LENGTH = 128
 
 
