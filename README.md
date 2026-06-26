@@ -1,11 +1,12 @@
-# FHE Benchmarking Suite - ML Inference
-This repository contains the harness for the ML-inference workload of the FHE benchmarking suite of [HomomorphicEncryption.org](https://www.HomomorphicEncryption.org).
-The harness currently supports encrypted BERT inference on the MRPC task as specified in `harness/mrpc` directory.
+# FHE Benchmarking Suite - BERT Inference
+
+This repository contains the harness for the BERT inference workload of the FHE benchmarking suite of [HomomorphicEncryption.org](https://www.HomomorphicEncryption.org).
+The harness currently supports [BERT-Base (110M)](https://huggingface.co/google-bert/bert-base-cased-finetuned-mrpc) inference on the MRPC task in the [GLUE benchmark](https://gluebenchmark.com/) as specified in `harness/mrpc` directory.
 The `main` branch contains a reference implementation of this workload, under the `submissions` subdirectory.
 
 Submitters should clone this repository and add their content as a subdirectory within the `submissions` directory.
 They also may need to change `requirements.txt` to account for dependencies of their submission.
-Submitters are expected to document any changes made to the model architecture `harness/mrpc/model.py` in the `submissions/[--submission]/README.md` file. Submitters have the option to generate an `io/[--size]/server_reported_steps.json` file, which contains fine grained metrics reported by the server in addition to the metrics reported by the harness.
+Submitters are expected to document any changes made to the model architecture `harness/mrpc/model.py` in the `submissions/{submission}/README.md` file. Submitters have the option to generate an `io/{size}/server_reported_steps.json` file, which contains fine grained metrics reported by the server in addition to the metrics reported by the harness.
 
 ## Execution Modes
 
@@ -32,7 +33,7 @@ cd BERT
 
 python3 -m venv .venv
 source ./.venv/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
 python3 harness/run_submission.py -h  # Information about command-line options
 ```
@@ -43,8 +44,7 @@ An example run is provided below.
 ```console
 $ python3 harness/run_submission.py -h
 usage: run_submission.py [-h] [--num_runs NUM_RUNS] [--seed SEED]
-                         [--clrtxt CLRTXT] [--submission SUBMISSION]
-                         {0,1,2,3}
+                         [--clrtxt CLRTXT] {0,1,2,3}
 
 Run ML Inference FHE benchmark.
 
@@ -56,9 +56,6 @@ options:
   --num_runs NUM_RUNS   Number of times to run steps 4-9 (default: 1)
   --seed SEED           Random seed for dataset and query generation
   --clrtxt CLRTXT       Specify with 1 if to rerun the cleartext computation
-  --submission SUBMISSION
-                        Submission subdirectory under submissions/ (default:
-                        run the reference implementation at submissions/)
 ```
 
 The single instance runs the inference for a single input and verifies the correctness of the obtained label compared to the ground-truth label.
@@ -115,21 +112,17 @@ The directory structure of this reposiroty is as follows:
 ├─ requirements.txt
 ├─ harness/        # Scripts to drive the workload implementation
 |   ├─ run_submission.py
-|   ├─ generate_dataset.py
-|   ├─ generate_input.py
-|   ├─ cleartext_impl.py
 |   ├─ verify_result.py
-|   └─ mrpc/        # MRPC dataset and BERT reference model
+|   ├─ [...]
+|   └─ mrpc/       # MRPC dataset and BERT reference model
 ├─ datasets/       # The harness scripts create and populate this directory
 ├─ io/             # This directory is used for client<->server communication
 ├─ measurements/   # Holds logs with performance numbers
 └─ submissions/    # This is where the workload implementations live
     ├─ client_*.py / server_*.py   # Reference (CPU) implementation
-    ├─ he.py, encode_weights.py, ...
-    └─ thor_gpu/   # GPU submission (see its README.md)
+    └─ he.py, encode_weights.py, ...
 ```
-Submitters add a subdirectory to `submissions/` (selected with `--submission`), or replace the
-reference implementation directly in `submissions/`.
+Submitters must overwrite the contents of the `scripts` and `submissions` subdirectories.
 
 ## Description of stages
 
