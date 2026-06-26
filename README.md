@@ -44,8 +44,6 @@ An example run is provided below.
 $ python3 harness/run_submission.py -h
 usage: run_submission.py [-h] [--num_runs NUM_RUNS] [--seed SEED]
                          [--clrtxt CLRTXT] [--submission SUBMISSION]
-                         [--dataset DATASET] [--thread_count THREAD_COUNT]
-                         [--parallel_sample_count PARALLEL_SAMPLE_COUNT]
                          {0,1,2,3}
 
 Run ML Inference FHE benchmark.
@@ -61,12 +59,6 @@ options:
   --submission SUBMISSION
                         Submission subdirectory under submissions/ (default:
                         run the reference implementation at submissions/)
-  --dataset DATASET     Pick a dataset run (default: mrpc)
-  --thread_count THREAD_COUNT
-                        Number of threads for the FHE engine (default: 16)
-  --parallel_sample_count PARALLEL_SAMPLE_COUNT
-                        Number of samples to process in parallel during server
-                        computation (default: 1)
 ```
 
 The single instance runs the inference for a single input and verifies the correctness of the obtained label compared to the ground-truth label.
