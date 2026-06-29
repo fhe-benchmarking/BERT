@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from desilofhe import Engine
-from transformers import BertForNextSentencePrediction
+from transformers import BertForSequenceClassification
 
 from params import InstanceParams
 from encode_weights import (
@@ -77,7 +77,7 @@ def main():
         warm_cache(lp_path)
         return
 
-    model = BertForNextSentencePrediction.from_pretrained(MODEL_ID)
+    model = BertForSequenceClassification.from_pretrained(MODEL_ID, output_hidden_states=True)
     model.eval()
 
     weights = {k: v.detach().cpu().numpy() for k, v in model.state_dict().items()}

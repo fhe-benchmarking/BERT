@@ -6,12 +6,11 @@ import sys
 import numpy as np
 import torch
 from desilofhe import Engine
-from transformers import BertForNextSentencePrediction
+from transformers import BertForSequenceClassification
 
 from params import InstanceParams
 
-# For encoding, base model is used.
-EMBED_MODEL_ID = "google-bert/bert-base-cased"
+EMBED_MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 EMBED_LEVEL = 9
 
 
@@ -88,7 +87,7 @@ def main():
         )
     secret_key = engine.read_secret_key(io_dir / "secret_key")
 
-    embedding_model = BertForNextSentencePrediction.from_pretrained(EMBED_MODEL_ID).bert.embeddings
+    embedding_model = BertForSequenceClassification.from_pretrained(EMBED_MODEL_ID).bert.embeddings
     embedding_model.eval()
 
     records = []
