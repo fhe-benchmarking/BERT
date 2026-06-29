@@ -67,7 +67,6 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
     params = InstanceParams(size, dataset=dataset_name)
     return size, params, seed, num_runs, clrtxt, model_name, dataset_name
 
-
 def ensure_directories(rootdir: Path):
     """ Check that the current directory has sub-directories
     'harness' and 'submissions' """
