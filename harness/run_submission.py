@@ -125,9 +125,9 @@ def main():
                                     str(ground_truth_labels), str(encrypted_model_preds), check=False)
         else:
             # 10.1 Run the cleartext computation in cleartext_impl.py
-            test_pixels = params.get_test_input_file()
+            test_input = params.get_test_input_file()
             harness_model_preds = params.get_harness_model_predictions_file()
-            utils.run_exe_or_python(harness_dir, "cleartext_impl", str(test_pixels), str(harness_model_preds), str(dataset_name))
+            utils.run_exe_or_python(harness_dir, "cleartext_impl", str(test_input), str(harness_model_preds), str(dataset_name))
             utils.log_step(10.1, "Harness: Run inference for harness plaintext model")
 
             # 10.2 Run the quality calculation

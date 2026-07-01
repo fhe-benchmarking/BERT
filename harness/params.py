@@ -25,7 +25,7 @@ LARGE = 3
 
 BATCH_SIZES = {
     "default": [1, 100, 1000, 10000],
-    "mrpc":    [1,  50,  200,   408],
+    "mrpc":    [1, 100,  200,   408],
 }
 
 def instance_name(size):
@@ -63,7 +63,7 @@ class InstanceParams:
         # if dataset:
         #     return self.rootdir / "datasets" / dataset / instance_name(self.size)
         return self.rootdir / "datasets" / instance_name(self.size)
-    
+
     def dataset_intermediate_dir(self):
         """Return the intermediate  directory path."""
         return self.datadir() / "intermediate"
@@ -83,14 +83,14 @@ class InstanceParams:
     def measuredir(self):
         """Return the measurements directory path."""
         return self.rootdir / "measurements" / instance_name(self.size)
-    
+
     def get_batch_size(self):
         """Return the number of items in the batch."""
         return self.batch_size
 
     def get_test_input_file(self):
         """Return the test input file path."""
-        return self.dataset_intermediate_dir() / "test_pixels.txt"
+        return self.dataset_intermediate_dir() / "test_input.txt"
 
     def get_ground_truth_labels_file(self):
         """Return the ground truth labels file path."""
