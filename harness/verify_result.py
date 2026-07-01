@@ -35,14 +35,14 @@ def main():
         exp = int(expected_file.read_text().strip())
         res = int(result_file.read_text().strip())
     except Exception as e:
-        print(f"[harness] failed to read files: {e}")
+        print(f"         [harness] failed to read files: {e}")
         sys.exit(1)
 
     if res == exp:
-        print(f"[harness] PASS  (expected={exp}, got={res})")
+        print(f"         [harness] PASS  (expected={exp}, got={res})")
         sys.exit(0)
     else:
-        print(f"[harness] FAIL  (expected={exp}, got={res})")
+        print(f"         [harness] FAIL  (expected={exp}, got={res})")
         sys.exit(1)
 
 if __name__ == "__main__":
