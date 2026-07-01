@@ -72,7 +72,7 @@ $ python3 harness/run_submission.py 0 --seed 3
          [submission] Generating bootstrap key (size=large)...
          [submission] Generated 200 fixed rotation keys.
          [submission] Generating public key...
-         [submission] Keys written to /home/BERT/io/single/public_keys
+         [submission] Keys written to .../io/single/public_keys
 14:20:44 [harness] 2: Key Generation completed (elapsed: 91.912s)
          [harness] Public and evaluation keys size: 21.4G
          [submission] Encoding masks...
@@ -92,7 +92,7 @@ $ python3 harness/run_submission.py 0 --seed 3
          [submission] Warming page cache...
 14:38:32 [harness] 3: Encrypted model preprocessing completed (elapsed: 1067.17s)
 14:38:41 [harness] 4: Input generation completed (elapsed: 9.6484s)
-         [submission] Preprocessed 1 records -> /home/BERT/io/single/intermediate/client_preprocessed_input
+         [submission] Preprocessed 1 records -> .../io/single/intermediate/client_preprocessed_input
 14:38:47 [harness] 5: Input preprocessing completed (elapsed: 5.9343s)
          [submission] Encrypting sample 1/1 (target_idx=25)...
 14:38:55 [harness] 6: Input encryption completed (elapsed: 7.6941s)
@@ -103,9 +103,9 @@ $ python3 harness/run_submission.py 0 --seed 3
 16:55:43 [harness] 7: Encrypted computation completed (elapsed: 8207.7512s)
          [harness] Encrypted results size: 30.0M
          [submission] Decrypting sample 1/1 (target_idx=2656)...
-         [submission] Decrypted 1 samples -> /home/BERT/io/single/intermediate/decrypted_results.jsonl
+         [submission] Decrypted 1 samples -> .../io/single/intermediate/decrypted_results.jsonl
 16:55:44 [harness] 8: Result decryption completed (elapsed: 1.8956s)
-         [submission] Wrote 1 predictions -> /home/BERT/io/single/encrypted_model_predictions.txt
+         [submission] Wrote 1 predictions -> .../io/single/encrypted_model_predictions.txt
 16:55:44 [harness] 9: Result postprocessing completed (elapsed: 0.0456s)
          [harness] PASS  (expected=1, got=1)
          [submission] Server reported steps: {'Encrypted computation': 5777.4029, 'I/O': 1356.036, 'Total': 7133.4389}
