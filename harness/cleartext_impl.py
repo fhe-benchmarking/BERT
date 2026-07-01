@@ -2,7 +2,7 @@
 """
 Cleartext reference for the “ML Inference” workload.
 For each test case:
-    - Reads the input pixels from the dataset intermediate directory
+    - Reads the input sentence pairs from the dataset intermediate directory
     - Writes the predicted labels to output_labels path.
 """
 # Copyright 2025 Google LLC
