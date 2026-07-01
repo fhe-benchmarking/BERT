@@ -5,6 +5,7 @@ from pathlib import Path
 
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
+from transformers.utils import logging as hf_logging
 
 from params import InstanceParams
 from encode_weights import (
@@ -20,6 +21,9 @@ from encode_weights import (
     pre_encode_stage_17,
     pre_encode_stage_18,
 )
+
+# Hide transformers' weight-loading info logs
+hf_logging.set_verbosity_error()
 
 MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 PER_LAYER_STAGES = [

@@ -7,8 +7,12 @@ import numpy as np
 import torch
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
+from transformers.utils import logging as hf_logging
 
 from params import InstanceParams
+
+# Hide transformers' weight-loading info logs
+hf_logging.set_verbosity_error()
 
 # For encoding, base model is used.
 EMBED_MODEL_ID = "google-bert/bert-base-cased"
