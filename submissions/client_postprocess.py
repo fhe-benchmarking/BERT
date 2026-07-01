@@ -6,7 +6,7 @@ from params import InstanceParams
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
+        print(f"         [submission] Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
     params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
@@ -14,7 +14,7 @@ def main():
 
     decrypted_path = intermediate_dir / "decrypted_results.jsonl"
     if not decrypted_path.exists():
-        print(f"Error: decrypted results not found: {decrypted_path}", file=sys.stderr)
+        print(f"         [submission] Error: decrypted results not found: {decrypted_path}", file=sys.stderr)
         sys.exit(1)
 
     records = []
@@ -37,7 +37,7 @@ def main():
         for label in predictions:
             f.write(f"{label}\n")
 
-    print(f"Wrote {len(predictions)} predictions -> {encrypted_model_preds}")
+    print(f"         [submission] Wrote {len(predictions)} predictions -> {encrypted_model_preds}")
 
 
 if __name__ == "__main__":
