@@ -11,8 +11,8 @@ from transformers.utils import logging as hf_logging
 
 from params import InstanceParams
 
-# Hide transformers' weight-loading info logs
-hf_logging.set_verbosity_error()
+# Hide transformers' loading progress bars
+hf_logging.disable_progress_bar()
 
 EMBED_MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 EMBED_LEVEL = 9

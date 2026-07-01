@@ -22,8 +22,8 @@ from encode_weights import (
     pre_encode_stage_18,
 )
 
-# Hide transformers' weight-loading info logs
-hf_logging.set_verbosity_error()
+# Hide transformers' loading progress bars
+hf_logging.disable_progress_bar()
 
 MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 PER_LAYER_STAGES = [
