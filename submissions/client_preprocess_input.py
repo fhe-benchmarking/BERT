@@ -5,8 +5,8 @@ from params import InstanceParams
 from transformers import AutoTokenizer
 from transformers.utils import logging as hf_logging
 
-# Hide transformers' weight-loading info logs
-hf_logging.set_verbosity_error()
+# Hide transformers' loading progress bars
+hf_logging.disable_progress_bar()
 
 # For encoding, base model is used.
 MODEL_ID = "google-bert/bert-base-cased"
