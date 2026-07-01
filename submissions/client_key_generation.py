@@ -85,7 +85,7 @@ def main():
     with open(io_dir / "thor_config.json", "w") as f:
         json.dump(config, f, indent=2)
 
-    print(f"compact={compact}  bootstrap_key_size={bootstrap_key_size}")
+    print(f"         [submission] compact={compact}  bootstrap_key_size={bootstrap_key_size}")
 
     if thread_count == 1:
         engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
@@ -97,19 +97,19 @@ def main():
             compact=compact,
         )
 
-    print("Generating secret key...")
+    print("         [submission] Generating secret key...")
     secret_key = engine.create_secret_key()
     engine.write_secret_key(secret_key, io_dir / "secret_key")
 
-    print("Generating conjugation key...")
+    print("         [submission] Generating conjugation key...")
     conjugation_key = engine.create_conjugation_key(secret_key)
     engine.write_conjugation_key(conjugation_key, public_keys_dir / "conjugation_key")
 
-    print("Generating relinearization key...")
+    print("         [submission] Generating relinearization key...")
     relinearization_key = engine.create_relinearization_key(secret_key)
     engine.write_relinearization_key(relinearization_key, public_keys_dir / "relinearization_key")
 
-    print(f"Generating bootstrap key (size={bootstrap_key_size})...")
+    print(f"         [submission] Generating bootstrap key (size={bootstrap_key_size})...")
     bootstrap_key = engine.create_bootstrap_key(secret_key, size=bootstrap_key_size)
     engine.write_bootstrap_key(bootstrap_key, public_keys_dir / "bootstrap_key")
 
@@ -122,13 +122,13 @@ def main():
         engine.write_fixed_rotation_key(key, fixed_rotation_keys_dir / str(delta))
         key_count += 1
 
-    print(f"Generated {key_count} fixed rotation keys.")
+    print(f"         [submission] Generated {key_count} fixed rotation keys.")
 
-    print("Generating public key...")
+    print("         [submission] Generating public key...")
     public_key = engine.create_public_key(secret_key)
     engine.write_public_key(public_key, public_keys_dir / "public_key")
 
-    print(f"Keys written to {public_keys_dir}")
+    print(f"         [submission] Keys written to {public_keys_dir}")
 
 
 if __name__ == "__main__":

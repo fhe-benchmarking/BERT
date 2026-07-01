@@ -22,7 +22,7 @@ def main():
 
     config_path = io_dir / "thor_config.json"
     if not config_path.exists():
-        print(f"Error: config not found: {config_path}", file=sys.stderr)
+        print(f"         [submission] Error: config not found: {config_path}", file=sys.stderr)
         sys.exit(1)
 
     with open(config_path) as f:
@@ -32,7 +32,7 @@ def main():
 
     secret_key_path = io_dir / "secret_key"
     if not secret_key_path.exists():
-        print(f"Error: secret key not found: {secret_key_path}", file=sys.stderr)
+        print(f"         [submission] Error: secret key not found: {secret_key_path}", file=sys.stderr)
         sys.exit(1)
 
     if thread_count == 1:
@@ -61,7 +61,7 @@ def main():
             target_idx = src["target_idx"]
             sample_dir = download_dir / str(idx)
 
-            print(f"Decrypting sample {idx + 1}/{len(records)} (target_idx={target_idx})...")
+            print(f"         [submission] Decrypting sample {idx + 1}/{len(records)} (target_idx={target_idx})...")
 
             ct_files = sorted(
                 sample_dir.glob("output_ct_*"),
@@ -80,7 +80,7 @@ def main():
 
             out.write(json.dumps(result) + "\n")
 
-    print(f"Decrypted {len(records)} samples -> {decrypted_path}")
+    print(f"         [submission] Decrypted {len(records)} samples -> {decrypted_path}")
 
 
 if __name__ == "__main__":

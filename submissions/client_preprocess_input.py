@@ -10,7 +10,7 @@ MAX_LENGTH = 128
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
+        print(f"         [submission] Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
     params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
@@ -20,7 +20,7 @@ def main():
     output_path = output_dir / "client_preprocessed_input"
 
     if not input_path.exists():
-        print(f"Error: input file not found: {input_path}", file=sys.stderr)
+        print(f"         [submission] Error: input file not found: {input_path}", file=sys.stderr)
         sys.exit(1)
 
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID)
@@ -50,7 +50,7 @@ def main():
                 "attention_mask": encoding["attention_mask"],
             }) + "\n")
 
-    print(f"Preprocessed {len(records)} records -> {output_path}")
+    print(f"         [submission] Preprocessed {len(records)} records -> {output_path}")
 
 
 if __name__ == "__main__":
