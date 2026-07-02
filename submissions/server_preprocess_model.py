@@ -81,6 +81,7 @@ def main():
         warm_cache(lp_path)
         return
 
+    print("         [submission] Generating light plaintexts...")
     model = BertForSequenceClassification.from_pretrained(MODEL_ID, output_hidden_states=True)
     model.eval()
 
@@ -90,11 +91,9 @@ def main():
     lp_path.mkdir(parents=True, exist_ok=True)
     engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
 
-    print("         [submission] Encoding masks...")
     pre_encode_masks(engine, lp_path)
 
     for layer_index in range(12):
-        print(f"         [submission] Encoding layer {layer_index}...")
         pre_encode_stage_03(engine, weights, layer_index, lp_path)
         pre_encode_stage_04(engine, weights, layer_index, lp_path)
         pre_encode_stage_05(engine, weights, layer_index, lp_path)
@@ -104,12 +103,10 @@ def main():
         pre_encode_stage_14(engine, weights, layer_index, lp_path)
         pre_encode_stage_16(engine, weights, layer_index, lp_path)
 
-    print("         [submission] Encoding pooler and classifier...")
     pre_encode_stage_17(engine, weights, lp_path)
     pre_encode_stage_18(engine, weights, lp_path)
 
     # This reduces the latency during the inference.
-    print("         [submission] Warming page cache...")
     warm_cache(lp_path)
 
 
