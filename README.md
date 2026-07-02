@@ -64,34 +64,42 @@ The single instance runs the inference for a single input and verifies the corre
 $ python3 harness/run_submission.py 0 --seed 3
 
 [harness] Running submission for single inference
-14:28:20 [harness] 1: Test dataset generation completed (elapsed: 8.1716s)
-         compact=False  bootstrap_key_size=large
-         Generating secret key...
-         Generating conjugation key...
-         Generating relinearization key...
-         Generating bootstrap key (size=large)...
-         Generated 200 fixed rotation keys.
-         Generating public key...
-         Keys written to .../io/single/public_keys
-14:29:46 [harness] 2: Key Generation completed (elapsed: 86.3882s)
+14:19:12 [harness] 1: Test dataset generation completed (elapsed: 8.8415s)
+         [submission] compact=False  bootstrap_key_size=large
+         [submission] Generating secret key...
+         [submission] Generating conjugation key...
+         [submission] Generating relinearization key...
+         [submission] Generating bootstrap key (size=large)...
+         [submission] Generated 200 fixed rotation keys.
+         [submission] Generating public key...
+         [submission] Keys written to .../io/single/public_keys
+14:20:44 [harness] 2: Key Generation completed (elapsed: 91.912s)
          [harness] Public and evaluation keys size: 21.4G
-14:33:54 [harness] 3: Encrypted model preprocessing completed (elapsed: 248.5028s)
-14:34:03 [harness] 4: Input generation completed (elapsed: 8.2175s)
-         Preprocessed 1 records -> .../io/single/intermediate/client_preprocessed_input
-14:34:08 [harness] 5: Input preprocessing completed (elapsed: 4.999s)
-         Encrypting sample 1/1 (target_idx=2656)...
-14:34:14 [harness] 6: Input encryption completed (elapsed: 6.2271s)
+         [submission] Generating light plaintexts...
+         [submission] Warming page cache...
+14:38:32 [harness] 3: Encrypted model preprocessing completed (elapsed: 1067.17s)
+14:38:41 [harness] 4: Input generation completed (elapsed: 9.6484s)
+         [submission] Preprocessed 1 records -> .../io/single/intermediate/client_preprocessed_input
+14:38:47 [harness] 5: Input preprocessing completed (elapsed: 5.9343s)
+         [submission] Encrypting sample 1/1 (target_idx=25)...
+14:38:55 [harness] 6: Input encryption completed (elapsed: 7.6941s)
          [harness] Encrypted input size: 46.0M
-         Sample 1 - Compute: 5101.660s, Elapsed: 5201.851s
-16:01:45 [harness] 7: Encrypted computation completed (elapsed: 5251.1738s)
+         [submission] Loading keys and weights...
+         [submission] Sample 1 - Compute: 5777.403s, I/O: 1356.036s, Total: 7133.439s
+         [submission] Total across all samples - Compute: 5777.403s, I/O: 1356.036s, Total: 7133.439s
+16:55:43 [harness] 7: Encrypted computation completed (elapsed: 8207.7512s)
          [harness] Encrypted results size: 30.0M
-         Decrypting sample 1/1 (target_idx=2656)...
-16:01:46 [harness] 8: Result decryption completed (elapsed: 0.9677s)
-16:01:46 [harness] 9: Result postprocessing completed (elapsed: 0.0267s)
-         [submission] Encrypted computation: 5101.6596s
-         [submission] Total: 5201.851s
-[harness] PASS  (expected=1, got=1)
-[total latency] 5614.6743s
+         [submission] Decrypting sample 1/1 (target_idx=2656)...
+         [submission] Decrypted 1 samples -> .../io/single/intermediate/decrypted_results.jsonl
+16:55:44 [harness] 8: Result decryption completed (elapsed: 1.8956s)
+         [submission] Wrote 1 predictions -> .../io/single/encrypted_model_predictions.txt
+16:55:44 [harness] 9: Result postprocessing completed (elapsed: 0.0456s)
+         [harness] PASS  (expected=1, got=1)
+         [submission] Server reported steps: {'Encrypted computation': 5777.4029, 'I/O': 1356.036, 'Total': 7133.4389}
+         [submission] Encrypted computation: 5777.4029s
+         [submission] I/O: 1356.036s
+         [submission] Total: 7133.4389s
+[total latency] 9400.8927s
 
 All steps completed for the single inference!
 ```

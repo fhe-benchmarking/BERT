@@ -34,7 +34,7 @@ def main():
     for _ in range(worker_count):
         he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
 
-    print("Loading keys and weights...")
+    print("         [submission] Loading keys and weights...")
     he = HE(params, compact, bootstrap_key_size, thread_count=thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
@@ -78,7 +78,7 @@ def main():
                 total_paused_seconds += paused
                 total_elapsed_seconds += elapsed
 
-            print(f"Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
+            print(f"         [submission] Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
@@ -98,7 +98,7 @@ def main():
     with open(io_dir / "server_reported_steps.json", "w") as f:
         json.dump(steps, f, indent=2)
 
-    print(f"Total across all samples - Compute: {total_compute_seconds:.3f}s, I/O: {total_paused_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
+    print(f"         [submission] Total across all samples - Compute: {total_compute_seconds:.3f}s, I/O: {total_paused_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
 
 
 if __name__ == "__main__":

@@ -215,21 +215,21 @@ def calculate_quality(label_file: Path, pred_file: Path, tag: str, threshold: fl
         preds = [label.strip() for label in preds if label.strip()]
 
     except Exception as e:
-        print(f"[harness] failed to read files: {e}")
+        print(f"         [harness] failed to read files: {e}")
         sys.exit(1)
 
     num_samples = len(preds)
 
     correct_pred = sum(1 for exp, res in zip(labels, preds) if exp == res)
     accuracy = correct_pred / num_samples
-    print(f"[harness] {tag}: {accuracy:.4f} ({correct_pred}/{num_samples} correct)")
+    print(f"         [harness] {tag}: {accuracy:.4f} ({correct_pred}/{num_samples} correct)")
     log_quality(correct_pred, num_samples, f"{tag} quality")
 
     if threshold is not None:
         passed = accuracy >= threshold
         status = "PASS" if passed else "FAIL"
         color = TextFormat.GREEN if passed else TextFormat.RED
-        print(f"{color}[harness] {tag} threshold ({threshold:.0%}): {status}{TextFormat.RESET}")
+        print(f"{color}         [harness] {tag} threshold ({threshold:.0%}): {status}{TextFormat.RESET}")
 
 
 def log_quality(correct_predictions, total_samples, tag):

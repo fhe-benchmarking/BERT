@@ -5,6 +5,7 @@ from pathlib import Path
 
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
+from transformers.utils import logging as hf_logging
 
 from params import InstanceParams
 from encode_weights import (
@@ -20,6 +21,9 @@ from encode_weights import (
     pre_encode_stage_17,
     pre_encode_stage_18,
 )
+
+# Hide transformers' loading progress bars
+hf_logging.disable_progress_bar()
 
 MODEL_ID = "google-bert/bert-base-cased-finetuned-mrpc"
 PER_LAYER_STAGES = [
@@ -59,7 +63,7 @@ def is_complete(lp_path):
 
 def main():
     if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} <size>", file=sys.stderr)
+        print(f"         [submission] Usage: {sys.argv[0]} <size>", file=sys.stderr)
         sys.exit(1)
 
     params = InstanceParams(int(sys.argv[1]), dataset="mrpc")
@@ -72,10 +76,12 @@ def main():
     lp_path = light_plaintext_path(params.server_data_dir(), compact)
 
     if is_complete(lp_path):
-        print(f"Light plaintexts already exist at {lp_path} — skipping generation.")
-        print("Warming page cache...")
+        print(f"         [submission] Light plaintexts already exist at {lp_path} — skipping generation.")
+        print("         [submission] Warming page cache...")
         warm_cache(lp_path)
         return
+
+    print("         [submission] Generating light plaintexts...")
 
     model = BertForNextSentencePrediction.from_pretrained(MODEL_ID)
     model.eval()
@@ -86,11 +92,9 @@ def main():
     lp_path.mkdir(parents=True, exist_ok=True)
     engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
 
-    print("Encoding masks...")
     pre_encode_masks(engine, lp_path)
 
     for layer_index in range(12):
-        print(f"Encoding layer {layer_index}...")
         pre_encode_stage_03(engine, weights, layer_index, lp_path)
         pre_encode_stage_04(engine, weights, layer_index, lp_path)
         pre_encode_stage_05(engine, weights, layer_index, lp_path)
@@ -100,12 +104,10 @@ def main():
         pre_encode_stage_14(engine, weights, layer_index, lp_path)
         pre_encode_stage_16(engine, weights, layer_index, lp_path)
 
-    print("Encoding pooler and classifier...")
     pre_encode_stage_17(engine, weights, lp_path)
     pre_encode_stage_18(engine, weights, lp_path)
 
     # This reduces the latency during the inference.
-    print("Warming page cache...")
     warm_cache(lp_path)
 
 

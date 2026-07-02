@@ -7,8 +7,12 @@ import numpy as np
 import torch
 from desilofhe import Engine
 from transformers import BertForNextSentencePrediction
+from transformers.utils import logging as hf_logging
 
 from params import InstanceParams
+
+# Hide transformers' loading progress bars
+hf_logging.disable_progress_bar()
 
 # For encoding, base model is used.
 EMBED_MODEL_ID = "google-bert/bert-base-cased"
@@ -69,7 +73,7 @@ def main():
     upload_dir = io_dir / "ciphertexts_upload"
 
     if not preprocessed_path.exists():
-        print(f"Error: preprocessed input not found: {preprocessed_path}", file=sys.stderr)
+        print(f"         [submission] Error: preprocessed input not found: {preprocessed_path}", file=sys.stderr)
         sys.exit(1)
 
     with open(io_dir / "thor_config.json") as f:
@@ -101,7 +105,7 @@ def main():
     upload_dir.mkdir(parents=True, exist_ok=True)
 
     for idx, record in enumerate(records):
-        print(f"Encrypting sample {idx + 1}/{len(records)} (target_idx={record['target_idx']})...")
+        print(f"         [submission] Encrypting sample {idx + 1}/{len(records)} (target_idx={record['target_idx']})...")
         sample_dir = upload_dir / str(idx)
         sample_dir.mkdir(exist_ok=True)
 
