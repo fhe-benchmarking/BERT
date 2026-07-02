@@ -1,6 +1,9 @@
 import json
 import mmap
+import os
+import queue
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from desilofhe import Engine
@@ -33,17 +36,26 @@ PER_LAYER_STAGES = [
 ]
 
 
+def _warm_file(f: Path):
+    try:
+        length = f.stat().st_size
+    except OSError:
+        return
+    if length == 0:
+        return
+    with open(f, "rb") as fh:
+        with mmap.mmap(fh.fileno(), length, access=mmap.ACCESS_READ) as m:
+            m.madvise(mmap.MADV_WILLNEED)
+            # Touch one byte per page to fault.
+            for off in range(0, length, mmap.PAGESIZE):
+                m[off]
+
+
 def warm_cache(path: Path):
-    for f in path.rglob("*"):
-        if not f.is_file():
-            continue
-        with open(f, "rb") as fh:
-            length = f.stat().st_size
-            if length == 0:
-                continue
-            with mmap.mmap(fh.fileno(), length, access=mmap.ACCESS_READ) as m:
-                m.madvise(mmap.MADV_SEQUENTIAL)
-                m.read(length)
+    files = [f for f in path.rglob("*") if f.is_file()]
+    workers = min(len(files), os.cpu_count() or 1)
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        list(executor.map(_warm_file, files))
 
 
 def light_plaintext_path(server_data_dir, compact):
@@ -89,22 +101,34 @@ def main():
     del model
 
     lp_path.mkdir(parents=True, exist_ok=True)
-    engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
 
-    pre_encode_masks(engine, lp_path)
+    engine_count = min(16, os.cpu_count() or 1)
+    engine_pool = queue.Queue()
+    for _ in range(engine_count):
+        engine_pool.put(Engine(use_bootstrap_to_14_levels=True, compact=compact))
 
+    def run_task(task):
+        fn, args = task
+        engine = engine_pool.get()
+        try:
+            fn(engine, *args)
+        finally:
+            engine_pool.put(engine)
+
+    encoding_functions = [
+        pre_encode_stage_03, pre_encode_stage_04, pre_encode_stage_05,
+        pre_encode_stage_10, pre_encode_stage_11, pre_encode_stage_12,
+        pre_encode_stage_14, pre_encode_stage_16,
+    ]
+    tasks = [(pre_encode_masks, (lp_path,))]
     for layer_index in range(12):
-        pre_encode_stage_03(engine, weights, layer_index, lp_path)
-        pre_encode_stage_04(engine, weights, layer_index, lp_path)
-        pre_encode_stage_05(engine, weights, layer_index, lp_path)
-        pre_encode_stage_10(engine, weights, layer_index, lp_path)
-        pre_encode_stage_11(engine, weights, layer_index, lp_path)
-        pre_encode_stage_12(engine, weights, layer_index, lp_path)
-        pre_encode_stage_14(engine, weights, layer_index, lp_path)
-        pre_encode_stage_16(engine, weights, layer_index, lp_path)
+        for fn in encoding_functions:
+            tasks.append((fn, (weights, layer_index, lp_path)))
+    tasks.append((pre_encode_stage_17, (weights, lp_path)))
+    tasks.append((pre_encode_stage_18, (weights, lp_path)))
 
-    pre_encode_stage_17(engine, weights, lp_path)
-    pre_encode_stage_18(engine, weights, lp_path)
+    with ThreadPoolExecutor(max_workers=engine_count) as executor:
+        list(executor.map(run_task, tasks))
 
     # This reduces the latency during the inference.
     print("         [submission] Warming page cache...")
