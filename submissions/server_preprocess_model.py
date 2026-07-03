@@ -5,6 +5,7 @@ import queue
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+import psutil
 
 from desilofhe import Engine
 from transformers import BertForSequenceClassification
@@ -52,6 +53,16 @@ def _warm_file(f: Path):
 
 
 def warm_cache(path: Path):
+    # All sizes are in GiB.
+    virtual_memory = psutil.virtual_memory() // 1024**3
+    light_plaintexts_size = 105
+    compute_memory = 40
+
+    if virtual_memory - compute_memory < light_plaintexts_size:
+        print("Warning: System memory has not enough space to hold the light plaintexts in memory."
+              "This may lead to low performance.")
+        return
+
     files = [f for f in path.rglob("*") if f.is_file()]
     with ThreadPoolExecutor(max_workers=4) as executor:
         list(executor.map(_warm_file, files))

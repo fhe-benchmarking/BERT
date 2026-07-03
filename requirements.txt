@@ -3,3 +3,4 @@ torch==2.9.1
 transformers>=4.40
 datasets>=2.19
 desilofhe>=1.14.0
+psutil>=7.0
