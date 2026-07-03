@@ -29,7 +29,7 @@ def main():
     bootstrap_key_size = config["bootstrap_key_size"]
 
     # All sizes are in GiB
-    virtual_memory = psutil.virtual_memory() // 1024**3
+    virtual_memory = psutil.virtual_memory().total // 1024**3
     light_plaintexts_size = 105
     compute_memory = 40
 
