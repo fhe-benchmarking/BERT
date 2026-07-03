@@ -1,7 +1,8 @@
 import json
-import mmap
 import os
 import queue
+import shutil
+import subprocess
 import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -37,21 +38,6 @@ PER_LAYER_STAGES = [
 ]
 
 
-def _warm_file(f: Path):
-    try:
-        length = f.stat().st_size
-    except OSError:
-        return
-    if length == 0:
-        return
-    with open(f, "rb") as fh:
-        with mmap.mmap(fh.fileno(), length, access=mmap.ACCESS_READ) as m:
-            m.madvise(mmap.MADV_WILLNEED)
-            # Touch one byte per page to fault.
-            for off in range(0, length, mmap.PAGESIZE):
-                m[off]
-
-
 def warm_cache(path: Path):
     # All sizes are in GiB.
     virtual_memory = psutil.virtual_memory().total // 1024**3
@@ -63,9 +49,12 @@ def warm_cache(path: Path):
               "This may lead to low performance.")
         return
 
-    files = [f for f in path.rglob("*") if f.is_file()]
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        list(executor.map(_warm_file, files))
+    if shutil.which("vmtouch") is None:
+        print("Warning: vmtouch not found; skipping page cache warming. "
+              "Install it (e.g. `apt install vmtouch`) for lower inference latency.")
+        return
+
+    subprocess.run(["vmtouch", "-t", str(path)], check=True)
 
 
 def light_plaintext_path(server_data_dir, compact):
