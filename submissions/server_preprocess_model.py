@@ -53,8 +53,7 @@ def _warm_file(f: Path):
 
 def warm_cache(path: Path):
     files = [f for f in path.rglob("*") if f.is_file()]
-    workers = min(len(files), os.cpu_count() or 1)
-    with ThreadPoolExecutor(max_workers=workers) as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         list(executor.map(_warm_file, files))
 
 
