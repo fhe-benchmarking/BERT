@@ -54,7 +54,7 @@ def warm_cache(path: Path):
               "Install it (e.g. `apt install vmtouch`) for lower inference latency.")
         return
 
-    subprocess.run(["vmtouch", "-t", str(path)], check=True)
+    subprocess.run(["vmtouch", "-qt", str(path)], check=True)
 
 
 def light_plaintext_path(server_data_dir, compact):
