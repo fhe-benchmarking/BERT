@@ -45,12 +45,11 @@ def main():
     cpu_count = max(os.cpu_count() or 1 // worker_count, 1)
     thread_count = min(16, cpu_count)
 
+    print("         [submission] Loading keys and weights...")
+
     he_pool = queue.Queue()
     for _ in range(worker_count):
         he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
-
-    print("         [submission] Loading keys and weights...")
-    he = HE(params, compact, bootstrap_key_size, thread_count=thread_count)
 
     upload_dir = io_dir / "ciphertexts_upload"
     download_dir = io_dir / "ciphertexts_download"
