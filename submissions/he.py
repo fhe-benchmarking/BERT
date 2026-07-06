@@ -701,7 +701,7 @@ class HE:
         return cplx_softmax
 
     def he_softmax1(self, x, attention_mask):
-        return self.he_softmax(x, attention_mask, min_x=-27.2493, max_x=21.72692, n=2, l=2, inv_epsilon=2**(-11), output_alpha=0.01)
+        return self.he_softmax(x, attention_mask, min_x=-10, max_x=10, n=2, l=2, inv_epsilon=2**(-11), output_alpha=0.01)
 
     def he_softmax2(self, x, attention_mask):
         return self.he_softmax(x, attention_mask, min_x=-70, max_x=70, n=2, l=4, inv_epsilon=2**(-18), output_alpha=0.01)
