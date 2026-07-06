@@ -40,7 +40,7 @@ PER_LAYER_STAGES = [
 
 def warm_cache(path: Path):
     # All sizes are in GiB.
-    virtual_memory = psutil.virtual_memory().total // 1024**3
+    virtual_memory = psutil.virtual_memory().available // 1024**3
     light_plaintexts_size = 105
     compute_memory = 40
 
