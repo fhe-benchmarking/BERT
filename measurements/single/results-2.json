@@ -1,23 +1,26 @@
 {
+  "model_name": "thor",
+  "dataset_name": "mrpc",
   "Timing": {
-    "Test dataset generation": "4.7884s",
-    "Key Generation": "0.9751s",
-    "Encrypted model preprocessing": "0.0037s",
-    "Input generation": "1.8093s",
-    "Input preprocessing": "0.0035s",
-    "Input encryption": "0.0936s",
-    "Encrypted computation": "7.6682s",
-    "Result decryption": "0.0842s",
-    "Result postprocessing": "0.0028s",
-    "Total": "15.4287s"
+    "Test dataset generation": "41.8618s",
+    "Key Generation": "78.2475s",
+    "Encrypted model preprocessing": "227.0234s",
+    "Input generation": "41.7543s",
+    "Input preprocessing": "7.5007s",
+    "Input encryption": "8.4049s",
+    "Encrypted computation": "3770.329s",
+    "Result decryption": "1.6513s",
+    "Result postprocessing": "0.04s",
+    "Total": "4176.8129s"
   },
   "Bandwidth": {
-    "Public and evaluation keys": "1.0G",
-    "Encrypted input": "5.0M",
-    "Encrypted results": "1.0M"
+    "Public and evaluation keys": "21.4G",
+    "Encrypted input": "46.0M",
+    "Encrypted results": "30.0M"
   },
   "Server Reported": {
-    "Encrypted computation": "6.515s",
-    "Total": "6.515s"
+    "Encrypted computation": "3551.6179s",
+    "I/O": "169.2072s",
+    "Total": "3720.825s"
   }
 }
