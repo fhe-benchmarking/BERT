@@ -49,13 +49,12 @@ def _init_worker(compact):
     _engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
 
 
-def _run_encode_masks(light_plaintext_path):
-    pre_encode_masks(_engine, light_plaintext_path)
-
-
-def _run_encode_stage(task):
-    fn, args = task
-    fn(_engine, _weights, *args)
+def _run_task(task):
+    fn, uses_weights, args = task
+    if uses_weights:
+        fn(_engine, _weights, *args)
+    else:
+        fn(_engine, *args)
 
 
 def warm_cache(path: Path):
@@ -129,15 +128,13 @@ def main():
         pre_encode_stage_10, pre_encode_stage_11, pre_encode_stage_12,
         pre_encode_stage_14, pre_encode_stage_16,
     ]
-    # Each task is (fn, args); the worker injects the weights from its inherited
-    # global so they never travel through the process pipe. Masks is the only
-    # stage that takes no weights, so it runs via its own runner.
-    tasks = []
+
+    tasks = [(pre_encode_masks, False, (lp_path,))]
     for layer_index in range(12):
         for fn in encoding_functions:
-            tasks.append((fn, (layer_index, lp_path)))
-    tasks.append((pre_encode_stage_17, (lp_path,)))
-    tasks.append((pre_encode_stage_18, (lp_path,)))
+            tasks.append((fn, True, (layer_index, lp_path)))
+    tasks.append((pre_encode_stage_17, True, (lp_path,)))
+    tasks.append((pre_encode_stage_18, True, (lp_path,)))
 
     # fork so workers inherit the weights via copy-on-write.
     ctx = mp.get_context("fork")
@@ -147,9 +144,7 @@ def main():
         initializer=_init_worker,
         initargs=(compact,),
     ) as executor:
-        masks = executor.submit(_run_encode_masks, lp_path)
-        list(executor.map(_run_encode_stage, tasks))
-        masks.result()
+        list(executor.map(_run_task, tasks))
 
     # This reduces the latency during the inference.
     print("         [submission] Warming page cache...")
