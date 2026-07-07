@@ -1,10 +1,10 @@
 import json
+import multiprocessing as mp
 import os
-import queue
 import shutil
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 import psutil
 
@@ -36,6 +36,26 @@ PER_LAYER_STAGES = [
     "stage_10", "stage_11", "stage_12",
     "stage_14", "stage_16",
 ]
+
+# Per-process state. The engine is single threaded, so we fan out across
+# processes; each worker holds its own engine. Weights are read-only and
+# inherited by workers via fork copy-on-write (never pickled).
+_engine = None
+_weights = None
+
+
+def _init_worker(compact):
+    global _engine
+    _engine = Engine(use_bootstrap_to_14_levels=True, compact=compact)
+
+
+def _run_encode_masks(light_plaintext_path):
+    pre_encode_masks(_engine, light_plaintext_path)
+
+
+def _run_encode_stage(task):
+    fn, args = task
+    fn(_engine, _weights, *args)
 
 
 def warm_cache(path: Path):
@@ -96,38 +116,40 @@ def main():
     model = BertForSequenceClassification.from_pretrained(MODEL_ID, output_hidden_states=True)
     model.eval()
 
-    weights = {k: v.detach().cpu().numpy() for k, v in model.state_dict().items()}
+    global _weights
+    _weights = {k: v.detach().cpu().numpy() for k, v in model.state_dict().items()}
     del model
 
     lp_path.mkdir(parents=True, exist_ok=True)
 
     engine_count = min(16, os.cpu_count() or 1)
-    engine_pool = queue.Queue()
-    for _ in range(engine_count):
-        engine_pool.put(Engine(use_bootstrap_to_14_levels=True, compact=compact))
-
-    def run_task(task):
-        fn, args = task
-        engine = engine_pool.get()
-        try:
-            fn(engine, *args)
-        finally:
-            engine_pool.put(engine)
 
     encoding_functions = [
         pre_encode_stage_03, pre_encode_stage_04, pre_encode_stage_05,
         pre_encode_stage_10, pre_encode_stage_11, pre_encode_stage_12,
         pre_encode_stage_14, pre_encode_stage_16,
     ]
-    tasks = [(pre_encode_masks, (lp_path,))]
+    # Each task is (fn, args); the worker injects the weights from its inherited
+    # global so they never travel through the process pipe. Masks is the only
+    # stage that takes no weights, so it runs via its own runner.
+    tasks = []
     for layer_index in range(12):
         for fn in encoding_functions:
-            tasks.append((fn, (weights, layer_index, lp_path)))
-    tasks.append((pre_encode_stage_17, (weights, lp_path)))
-    tasks.append((pre_encode_stage_18, (weights, lp_path)))
+            tasks.append((fn, (layer_index, lp_path)))
+    tasks.append((pre_encode_stage_17, (lp_path,)))
+    tasks.append((pre_encode_stage_18, (lp_path,)))
 
-    with ThreadPoolExecutor(max_workers=engine_count) as executor:
-        list(executor.map(run_task, tasks))
+    # fork so workers inherit the weights via copy-on-write.
+    ctx = mp.get_context("fork")
+    with ProcessPoolExecutor(
+        max_workers=engine_count,
+        mp_context=ctx,
+        initializer=_init_worker,
+        initargs=(compact,),
+    ) as executor:
+        masks = executor.submit(_run_encode_masks, lp_path)
+        list(executor.map(_run_encode_stage, tasks))
+        masks.result()
 
     # This reduces the latency during the inference.
     print("         [submission] Warming page cache...")
