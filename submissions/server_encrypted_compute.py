@@ -28,27 +28,9 @@ def main():
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
 
-    # All sizes are in GiB.
-    THREADS_PER_WORKER = 16
-    MEMORY_PER_WORKER = 40
-    LIGHT_PLAINTEXTS_SIZE = 105
-
-    virtual_memory = psutil.virtual_memory().available // 1024**3
-    cpu_count = os.cpu_count() or 1
-
-    # Reserve room for the light plaintext page cache when it fits;
-    # otherwise give all available memory to the workers.
-    if virtual_memory > LIGHT_PLAINTEXTS_SIZE:
-        memory_budget = virtual_memory - LIGHT_PLAINTEXTS_SIZE
-    else:
-        memory_budget = virtual_memory
-
-    # Bound workers by memory, by available cores, and by the sample count.
-    workers_by_memory = memory_budget // MEMORY_PER_WORKER
-    workers_by_cpu = cpu_count // THREADS_PER_WORKER
-    worker_count = max(min(workers_by_memory, workers_by_cpu, batch_size), 1)
-
-    thread_count = min(THREADS_PER_WORKER, cpu_count)
+    thread_count = 16
+    max_parallel_workers = 4
+    worker_count = min((os.cpu_count() or 1) // thread_count,  max_parallel_workers, batch_size)
 
     print("         [submission] Loading keys and weights...")
 
