@@ -48,10 +48,6 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Random seed for dataset and query generation')
     parser.add_argument('--clrtxt', type=int,
                         help='Specify with 1 if to rerun the cleartext computation')
-    parser.add_argument('--model', default='thor', type=str,
-                        help='Pick a model run (default: thor)')
-    parser.add_argument('--dataset', default='mrpc', type=str,
-                        help='Pick a dataset run (default: mrpc)')
 
     args = parser.parse_args()
     size = args.size
@@ -60,8 +56,8 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
     clrtxt = args.clrtxt
 
     # adding model and dataset to the arguments
-    model_name = args.model.lower()
-    dataset_name = args.dataset.lower()
+    model_name = "thor"
+    dataset_name = "mrpc"
 
     # Use params.py to get instance parameters
     params = InstanceParams(size, dataset=dataset_name)
