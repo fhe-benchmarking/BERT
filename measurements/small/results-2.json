@@ -4,7 +4,7 @@
   "Timing": {
     "Test dataset generation": "10.9631s",
     "Key Generation": "89.2107s",
-    "Encrypted model preprocessing": "237.3233s",
+    "Encrypted model preprocessing": "442.3431s",
     "Input generation": "12.8429s",
     "Input preprocessing": "6.4731s",
     "Input encryption": "70.4226s",
@@ -13,7 +13,7 @@
     "Result postprocessing": "0.0528s",
     "Harness: Run inference for harness plaintext model": "20.5099s",
     "Harness: Run quality check": "0.0036s",
-    "Total": "92091.2806s"
+    "Total": "92296.3004s"
   },
   "Bandwidth": {
     "Public and evaluation keys": "21.4G",

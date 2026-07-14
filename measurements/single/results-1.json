@@ -4,14 +4,14 @@
   "Timing": {
     "Test dataset generation": "41.8618s",
     "Key Generation": "78.2475s",
-    "Encrypted model preprocessing": "227.0234s",
+    "Encrypted model preprocessing": "406.7570s",
     "Input generation": "13.1298s",
     "Input preprocessing": "6.9596s",
     "Input encryption": "8.0748s",
     "Encrypted computation": "3824.3394s",
     "Result decryption": "0.8676s",
     "Result postprocessing": "0.0437s",
-    "Total": "4200.5477s"
+    "Total": "4380.2813s"
   },
   "Bandwidth": {
     "Public and evaluation keys": "21.4G",
