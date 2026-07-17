@@ -48,8 +48,8 @@ def parse_submission_arguments(workload: str) -> Tuple[int, InstanceParams, int,
                         help='Random seed for dataset and query generation')
     parser.add_argument('--clrtxt', type=int,
                         help='Specify with 1 if to rerun the cleartext computation')
-    parser.add_argument('--model', default='thor', type=str,
-                        help='Pick a model run (default: thor)')
+    parser.add_argument('--model', default='bert-base', type=str,
+                        help='Pick a model run (default: bert-base)')
     parser.add_argument('--dataset', default='mrpc', type=str,
                         help='Pick a dataset run (default: mrpc)')
 
