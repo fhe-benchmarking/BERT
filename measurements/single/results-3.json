@@ -1,5 +1,5 @@
 {
-  "model_name": "thor",
+  "model_name": "bert-base",
   "dataset_name": "mrpc",
   "Timing": {
     "Test dataset generation": "41.8618s",
@@ -16,7 +16,8 @@
   "Bandwidth": {
     "Public and evaluation keys": "21.4G",
     "Encrypted input": "46.0M",
-    "Encrypted results": "30.0M"
+    "Encrypted results": "30.0M",
+    "Packed model weights": "110G"
   },
   "Server Reported": {
     "Encrypted computation": "3461.7096s",
