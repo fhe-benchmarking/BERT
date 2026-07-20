@@ -2,16 +2,16 @@
   "model_name": "bert-base",
   "dataset_name": "mrpc",
   "Timing": {
-    "Test dataset generation": "41.8618s",
-    "Key Generation": "78.2475s",
-    "Encrypted model preprocessing": "406.7570s",
-    "Input generation": "13.1298s",
-    "Input preprocessing": "6.9596s",
-    "Input encryption": "8.0748s",
-    "Encrypted computation": "3824.3394s",
-    "Result decryption": "0.8676s",
-    "Result postprocessing": "0.0437s",
-    "Total": "4380.2813s"
+    "Test dataset generation": "4.7787s",
+    "Key Generation": "51.6178s",
+    "Encrypted model preprocessing": "3.2822s",
+    "Input generation": "4.9523s",
+    "Input preprocessing": "3.5718s",
+    "Input encryption": "4.041s",
+    "Encrypted computation": "2453.4007s",
+    "Result decryption": "0.6315s",
+    "Result postprocessing": "0.0214s",
+    "Total": "2526.2974s"
   },
   "Bandwidth": {
     "Public and evaluation keys": "21.4G",
@@ -20,8 +20,8 @@
     "Packed model weights": "110G"
   },
   "Server Reported": {
-    "Encrypted computation": "3600.2347s",
-    "I/O": "176.0896s",
-    "Total": "3776.3243s"
+    "Encrypted computation": "2367.4655s",
+    "I/O": "62.8591s",
+    "Total": "2430.3246s"
   }
 }
