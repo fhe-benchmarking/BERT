@@ -47,7 +47,6 @@ def main():
             he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
 
     def process_sample(idx):
-        nonlocal total_compute_seconds, total_paused_seconds, total_elapsed_seconds
         he = he_pool.get()
         try:
             sample_dir = upload_dir / str(idx)
