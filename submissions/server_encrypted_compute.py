@@ -39,8 +39,6 @@ def main():
 
     print("         [submission] Loading keys and weights...")
     timer = Timer()
-    timer.start()
-
     he_pool = queue.Queue()
     with timer.paused():
         for _ in range(worker_count):
