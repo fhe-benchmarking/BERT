@@ -9,4 +9,4 @@ Before submitting your implementation, run the `run_submission.py` script with a
 
 ## Results for the reference implementation
 
-For the reference implementation we only produced measurements for single, and small instances. You can find these measurements in the sub-directories here, they were generated in July 2026.
+For the reference implementation we only produced measurements for single, and small instances. You can find these measurements in the sub-directories here, they were generated on c3-highmem-176 (176 vCPUs, 1,408 GB Memory) in July 2026.

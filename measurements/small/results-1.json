@@ -2,18 +2,18 @@
   "model_name": "bert-base",
   "dataset_name": "mrpc",
   "Timing": {
-    "Test dataset generation": "10.9631s",
-    "Key Generation": "89.2107s",
-    "Encrypted model preprocessing": "442.3431s",
-    "Input generation": "13.9365s",
-    "Input preprocessing": "7.279s",
-    "Input encryption": "70.8017s",
-    "Encrypted computation": "92631.3144s",
-    "Result decryption": "45.2125s",
-    "Result postprocessing": "0.0404s",
-    "Harness: Run inference for harness plaintext model": "20.4842s",
-    "Harness: Run quality check": "0.0037s",
-    "Total": "93331.5891s"
+    "Test dataset generation": "5.9304s",
+    "Key Generation": "51.6037s",
+    "Encrypted model preprocessing": "3.2842s",
+    "Input generation": "4.9543s",
+    "Input preprocessing": "3.6369s",
+    "Input encryption": "24.5697s",
+    "Encrypted computation": "67013.8134s",
+    "Result decryption": "36.6633s",
+    "Result postprocessing": "0.0221s",
+    "Harness: Run inference for harness plaintext model": "7.8237s",
+    "Harness: Run quality check": "0.0004s",
+    "Total": "67152.3019s"
   },
   "Bandwidth": {
     "Public and evaluation keys": "21.4G",
@@ -23,19 +23,19 @@
   },
   "Quality": {
     "Encrypted model quality": {
-      "correct_predictions": 87,
+      "correct_predictions": 81,
       "total_samples": 100,
-      "accuracy": 0.87
+      "accuracy": 0.81
     },
     "Harness model quality": {
-      "correct_predictions": 87,
+      "correct_predictions": 85,
       "total_samples": 100,
-      "accuracy": 0.87
+      "accuracy": 0.85
     }
   },
   "Server Reported": {
-    "Encrypted computation": "347970.3173s",
-    "I/O": "16796.2555s",
-    "Total": "364766.573s"
+    "Encrypted computation": "260628.5361s",
+    "I/O": "6317.5316s",
+    "Total": "266946.0679s"
   }
 }
