@@ -38,13 +38,19 @@ def main():
     worker_count = min((os.cpu_count() or 1) // thread_count,  max_parallel_workers, batch_size)
 
     print("         [submission] Loading keys and weights...")
-    timer = Timer()
+
     he_pool = queue.Queue()
-    with timer.paused():
-        for _ in range(worker_count):
-            he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
+    for _ in range(worker_count):
+        he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
+
+    timer = Timer()
+    total_compute_seconds = 0.0
+    total_paused_seconds = 0.0
+    total_elapsed_seconds = 0.0
+    lock = threading.Lock()
 
     def process_sample(idx):
+        nonlocal total_compute_seconds, total_paused_seconds, total_elapsed_seconds
         he = he_pool.get()
         try:
             sample_dir = upload_dir / str(idx)
@@ -67,9 +73,15 @@ def main():
             x = he.stage_18_classifier(x)
 
             compute = he.timer.compute_elapsed
+            paused = he.timer.paused_time
             elapsed = he.timer.elapsed
 
-            print(f"         [submission] Sample {idx + 1} - Compute: {compute:.3f}s, Total: {elapsed:.3f}s")
+            with lock:
+                total_compute_seconds += compute
+                total_paused_seconds += paused
+                total_elapsed_seconds += elapsed
+
+            print(f"         [submission] Sample {idx + 1} - Compute: {compute:.3f}s, I/O: {paused:.3f}s, Total: {elapsed:.3f}s")
 
             out_dir = download_dir / str(idx)
             out_dir.mkdir(exist_ok=True)
@@ -81,13 +93,21 @@ def main():
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
         list(executor.map(process_sample, range(batch_size)))
 
-    total_compute_seconds = timer.compute_elapsed
-    total_elapsed_seconds = timer.elapsed
+    if batch_size == 1:
+        steps = {
+            "Encrypted computation": round(total_compute_seconds, 4),
+            "I/O": round(total_paused_seconds, 4),
+            "Total": round(total_elapsed_seconds, 4),
+        }
+    else:
+        total_compute_seconds = timer.compute_elapsed
+        total_elapsed_seconds = timer.elapsed
 
-    steps = {
-        "Encrypted computation": round(total_compute_seconds, 4),
-        "Total": round(total_elapsed_seconds, 4),
-    }
+        steps = {
+            "Encrypted computation": round(total_compute_seconds, 4),
+            "Total": round(total_elapsed_seconds, 4),
+        }
+
     with open(io_dir / "server_reported_steps.json", "w") as f:
         json.dump(steps, f, indent=2)
 
