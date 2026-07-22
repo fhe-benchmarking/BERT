@@ -81,7 +81,7 @@ def check_requirements(model_name: str):
     """
     Check that required Python packages for the submission are importable.
     """
-    required_packages = ['numpy', 'torch', 'transformers', 'datasets', 'desilofhe']
+    required_packages = ['numpy', 'torch', 'transformers', 'datasets']
     missing = []
     for pkg in required_packages:
         result = subprocess.run(
