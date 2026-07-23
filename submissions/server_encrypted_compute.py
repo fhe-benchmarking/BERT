@@ -12,6 +12,7 @@ import numpy as np
 
 from params import InstanceParams
 from he import HE
+from timer import Timer
 
 
 def main():
@@ -28,6 +29,10 @@ def main():
     compact = config["compact"]
     bootstrap_key_size = config["bootstrap_key_size"]
 
+    upload_dir = io_dir / "ciphertexts_upload"
+    download_dir = io_dir / "ciphertexts_download"
+    download_dir.mkdir(parents=True, exist_ok=True)
+
     thread_count = 16
     max_parallel_workers = 4
     worker_count = min((os.cpu_count() or 1) // thread_count,  max_parallel_workers, batch_size)
@@ -38,10 +43,7 @@ def main():
     for _ in range(worker_count):
         he_pool.put(HE(params, compact, bootstrap_key_size, thread_count=thread_count))
 
-    upload_dir = io_dir / "ciphertexts_upload"
-    download_dir = io_dir / "ciphertexts_download"
-    download_dir.mkdir(parents=True, exist_ok=True)
-
+    timer = Timer()
     total_compute_seconds = 0.0
     total_paused_seconds = 0.0
     total_elapsed_seconds = 0.0
@@ -91,15 +93,25 @@ def main():
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
         list(executor.map(process_sample, range(batch_size)))
 
-    steps = {
-        "Encrypted computation": round(total_compute_seconds, 4),
-        "I/O": round(total_paused_seconds, 4),
-        "Total": round(total_elapsed_seconds, 4),
-    }
+    if batch_size == 1:
+        steps = {
+            "Encrypted computation": round(total_compute_seconds, 4),
+            "I/O": round(total_paused_seconds, 4),
+            "Total": round(total_elapsed_seconds, 4),
+        }
+    else:
+        total_compute_seconds = timer.compute_elapsed
+        total_elapsed_seconds = timer.elapsed
+
+        steps = {
+            "Encrypted computation": round(total_compute_seconds, 4),
+            "Total": round(total_elapsed_seconds, 4),
+        }
+
     with open(io_dir / "server_reported_steps.json", "w") as f:
         json.dump(steps, f, indent=2)
 
-    print(f"         [submission] Total across all samples - Compute: {total_compute_seconds:.3f}s, I/O: {total_paused_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
+    print(f"         [submission] Total across all samples - Compute: {total_compute_seconds:.3f}s, Total: {total_elapsed_seconds:.3f}s")
 
 
 if __name__ == "__main__":
