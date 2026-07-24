@@ -8,6 +8,8 @@ Submitters should clone this repository and add their content as a subdirectory 
 They also may need to change `requirements.txt` to account for dependencies of their submission.
 Submitters are expected to document any changes made to the model architecture `harness/mrpc/model.py` in the `submissions/{submission}/README.md` file. Submitters have the option to generate an `io/{size}/server_reported_steps.json` file, which contains fine grained metrics reported by the server in addition to the metrics reported by the harness.
 
+Encrypted inference for Transformer architectures like BERT can be implemented in various ways on various backends. Currently, the reference submission follows the method of the paper named THOR [[MYJK25](https://doi.org/10.1145/3719027.3765150)] and uses the [DESILO FHE library](https://fhe.desilo.dev) as the backend.
+
 ## Execution Modes
 
 All steps are executed on a single machine:
